@@ -56,13 +56,14 @@
    },
    "release_status" : "unstable",
    "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/nqounet/p5-json-rpc-spec/issues"
+      },
+      "homepage" : "https://github.com/nqounet/p5-json-rpc-spec",
       "repository" : {
-         "type" : "git",
-         "url" : "git://bitbucket.org/nqounet/p5-json-rpc-spec.git"
+         "url" : "https://github.com/nqounet/p5-json-rpc-spec.git",
+         "web" : "https://github.com/nqounet/p5-json-rpc-spec"
       }
    },
-   "version" : "0.01",
-   "x_contributors" : [
-      "Nobutaka Wakabayashi <wakabayashi@digitalsheep.co.jp>"
-   ]
+   "version" : "0.01"
 }
