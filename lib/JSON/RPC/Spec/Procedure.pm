@@ -4,10 +4,7 @@ use strict;
 use warnings;
 use parent 'JSON::RPC::Spec';
 use Carp ();
-
 use Try::Tiny;
-
-use DDP {deparse => 1};
 
 sub new {
     my $class = shift;
