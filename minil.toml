@@ -1,4 +1,4 @@
 name = "JSON-RPC-Spec"
-# badges = ["travis"]
+badges = ["travis"]
 module_maker="ModuleBuildTiny"
 
