@@ -66,10 +66,11 @@ sub rpc_invalid_params {
 }
 
 sub rpc_internal_error {
-    my ($self) = @_;
+    my ($self, @args) = @_;
     my $error = {
         code    => -32603,
-        message => 'Internal error'
+        message => 'Internal error',
+        @args
     };
     return $self->error($error);
 }
@@ -153,7 +154,9 @@ JSON::RPC::Spec - Yet another JSON-RPC 2.0 Implementation
 
 =head1 SYNOPSIS
 
+    use strict;
     use JSON::RPC::Spec;
+
     my $rpc = JSON::RPC::Spec->new;
     $rpc->register(echo => sub { $_[0] });
     print $rpc->parse(
@@ -166,7 +169,7 @@ JSON::RPC::Spec is Yet another JSON-RPC 2.0 Implementation.
 
 JSON format string execute registerd method
 
-=head1 METHODS
+=head1 FUNCTIONS
 
 =head2 new
 
@@ -206,7 +209,6 @@ it under the same terms as Perl itself.
 
 =head1 AUTHOR
 
-nqounet E<lt>nobu@nishimiyahara.netE<gt>
+nqounet E<lt>mail@nqou.netE<gt>
 
 =cut
-

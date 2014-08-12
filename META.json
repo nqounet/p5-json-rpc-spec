@@ -1,7 +1,7 @@
 {
    "abstract" : "Yet another JSON-RPC 2.0 Implementation",
    "author" : [
-      "nqounet <nobu@nishimiyahara.net>"
+      "nqounet <mail@nqou.net>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "Minilla/v2.1.1, CPAN::Meta::Converter version 2.142060",
@@ -43,8 +43,8 @@
       "runtime" : {
          "requires" : {
             "JSON::XS" : "3.01",
-            "Router::Simple" : "0",
-            "Try::Tiny" : "0",
+            "Router::Simple" : "0.15",
+            "Try::Tiny" : "0.22",
             "perl" : "5.008001"
          }
       },

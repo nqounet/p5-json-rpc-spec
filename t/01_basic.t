@@ -55,25 +55,54 @@ subtest 'empty string' => sub {
 };
 
 subtest 'result is empty string' => sub {
-        my $id          = time;
-        my $json_string = $coder->encode(
-            {
-                jsonrpc => '2.0',
-                id      => $id,
-                method  => 'echo',
-                params  => ''
-            }
-        );
+    my $id          = time;
+    my $json_string = $coder->encode(
+        {
+            jsonrpc => '2.0',
+            id      => $id,
+            method  => 'echo',
+            params  => ''
+        }
+    );
     my $result = $rpc->parse($json_string);
     ok $result, 'method parse';
     is_deeply $coder->decode($result),
       +{
         jsonrpc => '2.0',
         id      => $id,
-        result   => ''
+        result  => ''
       },
       'result is empty string'
       or diag explain $result;
+};
+
+subtest 'custom error' => sub {
+    $rpc->register(echo_die => sub { die $_[0] });
+    for my $content ("Hello\n", [1, 2], {foo => 'bar'}) {
+        my $id          = time;
+        my $json_string = $coder->encode(
+            {
+                jsonrpc => '2.0',
+                id      => $id,
+                method  => 'echo_die',
+                params  => $content
+            }
+        );
+        my $result = $rpc->parse($json_string);
+        ok $result, 'parse ok';
+        is_deeply $coder->decode($result),
+          +{
+            jsonrpc => '2.0',
+            id      => $id,
+            error   => {
+                code    => -32603,
+                message => 'Internal error',
+                data    => $content
+            }
+          },
+          'result has error object'
+          or diag explain $result;
+    }
 };
 
 done_testing;

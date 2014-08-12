@@ -1,10 +1,13 @@
+[![Build Status](https://travis-ci.org/nqounet/p5-json-rpc-spec.png?branch=master)](https://travis-ci.org/nqounet/p5-json-rpc-spec)
 # NAME
 
 JSON::RPC::Spec - Yet another JSON-RPC 2.0 Implementation
 
 # SYNOPSIS
 
+    use strict;
     use JSON::RPC::Spec;
+
     my $rpc = JSON::RPC::Spec->new;
     $rpc->register(echo => sub { $_[0] });
     print $rpc->parse(
@@ -17,7 +20,7 @@ JSON::RPC::Spec is Yet another JSON-RPC 2.0 Implementation.
 
 JSON format string execute registerd method
 
-# METHODS
+# FUNCTIONS
 
 ## new
 
@@ -57,4 +60,4 @@ it under the same terms as Perl itself.
 
 # AUTHOR
 
-nqounet <nobu@nishimiyahara.net>
+nqounet <mail@nqou.net>

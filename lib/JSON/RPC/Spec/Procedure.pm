@@ -42,7 +42,7 @@ sub parse {
             $error = $self->rpc_method_not_found;
         }
         else {
-            $error = $self->rpc_internal_error;
+            $error = $self->rpc_internal_error(data => $e);
         }
     };
     if ($self->is_notification) {
