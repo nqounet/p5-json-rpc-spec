@@ -65,5 +65,6 @@
          "web" : "https://github.com/nqounet/p5-json-rpc-spec"
       }
    },
-   "version" : "0.01"
+   "version" : "0.01",
+   "x_authority" : "cpan:NQOUNET"
 }
