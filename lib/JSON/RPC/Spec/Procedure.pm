@@ -1,10 +1,12 @@
 package JSON::RPC::Spec::Procedure;
-use 5.008001;
 use strict;
 use warnings;
-use parent 'JSON::RPC::Spec';
 use Carp ();
+
+use parent 'JSON::RPC::Spec';
 use Try::Tiny;
+
+use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_PROCEDURE_DEBUG} || 0;
 
 sub new {
     my $class = shift;
@@ -68,7 +70,8 @@ sub trigger {
     unless ($matched) {
         Carp::confess 'rpc_method_not_found';
     }
-    return $matched->{callback}->($params);
+    my $cb = delete $matched->{'.callback'};
+    return $cb->($params, $matched);
 }
 
 1;

@@ -1,7 +1,7 @@
 package JSON::RPC::Spec;
-use 5.008001;
 use strict;
 use warnings;
+use Carp ();
 
 our $VERSION = "0.01";
 
@@ -11,15 +11,13 @@ use Router::Simple;
 use Try::Tiny;
 use JSON::RPC::Spec::Procedure;
 
+use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
+
 sub new {
     my $class = shift;
-    my $args = @_ == 1 ? $_[0] : +{@_};
-    if (!exists $args->{coder}) {
-        $args->{coder} = JSON::XS->new->utf8;
-    }
-    if (!exists $args->{router}) {
-        $args->{router} = Router::Simple->new;
-    }
+    my $args;
+    $args->{coder} = JSON::XS->new->utf8;
+    $args->{router} = Router::Simple->new;
     $args->{procedure}
       = JSON::RPC::Spec::Procedure->new(router => $args->{router});
     my $self = bless $args, $class;
@@ -27,6 +25,7 @@ sub new {
     return $self;
 }
 
+# universal error routine
 sub error {
     my ($self, $error) = @_;
     return +{
@@ -85,13 +84,16 @@ sub rpc_parse_error {
     return $self->error($error);
 }
 
+# parse JSON string
 sub parse {
     my ($self, $json_string) = @_;
+    warn qq{-- start parsing @{[$json_string]}\n} if DEBUG;
     my $coder = $self->{coder};
     unless (length $json_string) {
         return $coder->encode($self->rpc_invalid_request);
     }
 
+    # JSON decode
     # rpc call with invalid JSON:
     # rpc call Batch, invalid JSON:
     my ($request, $has_error);
@@ -105,6 +107,8 @@ sub parse {
     if ($has_error) {
         return $coder->encode($request);
     }
+
+    # Batch mode flag
     if (ref $request eq 'ARRAY') {
         $self->is_batch(1);
     }
@@ -117,9 +121,13 @@ sub parse {
     unless (scalar @{$request}) {
         return $coder->encode($self->rpc_invalid_request);
     }
+
+    # procedure call and create response
     my @response;
     for my $obj (@{$request}) {
         my $res = $self->{procedure}->parse($obj);
+
+        # notification is ignore
         push @response, $res if $res;
     }
     my $result;
@@ -137,8 +145,7 @@ sub parse {
 # register method
 sub register {
     my ($self, $name, $cb) = @_;
-    my $router = $self->{router};
-    $router->connect($name, {callback => $cb}, {});
+    $self->{router}->connect($name, {'.callback' => $cb}, {});
     return $self;
 }
 
@@ -180,6 +187,7 @@ create instance
 =head2 register
 
     # method => code refs
+    use List::Util qw(max);
     $rpc->register(max => sub { max(@{$_[0]}) });
 
 register method
@@ -191,6 +199,12 @@ register method
     );    # -> {"id":1,"result":11,"jsonrpc":"2.0"}
 
 parse JSON and triggered method
+
+=head1 DEBUGGING
+
+You can set the C<PERL_JSON_RPC_SPEC_DEBUG> environment variable to get some advanced diagnostics information printed to C<STDERR>.
+
+    PERL_JSON_RPC_SPEC_DEBUG=1
 
 =head1 SEE ALSO
 
@@ -204,8 +218,7 @@ http://search.cpan.org/dist/JSON-RPC-Common/
 
 Copyright (C) nqounet.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 =head1 AUTHOR
 

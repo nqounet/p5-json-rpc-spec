@@ -31,6 +31,7 @@ create instance
 ## register
 
     # method => code refs
+    use List::Util qw(max);
     $rpc->register(max => sub { max(@{$_[0]}) });
 
 register method
@@ -42,6 +43,12 @@ register method
     );    # -> {"id":1,"result":11,"jsonrpc":"2.0"}
 
 parse JSON and triggered method
+
+# DEBUGGING
+
+You can set the `PERL_JSON_RPC_SPEC_DEBUG` environment variable to get some advanced diagnostics information printed to `STDERR`.
+
+    PERL_JSON_RPC_SPEC_DEBUG=1
 
 # SEE ALSO
 
@@ -55,8 +62,7 @@ http://search.cpan.org/dist/JSON-RPC-Common/
 
 Copyright (C) nqounet.
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
 # AUTHOR
 

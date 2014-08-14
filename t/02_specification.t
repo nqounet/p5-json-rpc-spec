@@ -33,10 +33,9 @@ $rpc->register(notify_sum   => sub {1});
 $rpc->register(notify_hello => sub {1});
 
 my $coder = JSON::XS->new->utf8;
-my $res;
 
 subtest 'rpc call with positional parameters' => sub {
-    $res
+    my $res
       = $rpc->parse(
         '{"jsonrpc": "2.0", "method": "subtract", "params": [42, 23], "id": 1}'
       );
@@ -54,8 +53,7 @@ subtest 'rpc call with positional parameters' => sub {
 };
 
 subtest 'rpc call with named parameters' => sub {
-
-    $res
+    my $res
       = $rpc->parse(
         '{"jsonrpc": "2.0", "method": "subtract", "params": {"subtrahend": 23, "minuend": 42}, "id": 3}'
       );
@@ -73,7 +71,7 @@ subtest 'rpc call with named parameters' => sub {
 };
 
 subtest 'a Notification' => sub {
-    $res = $rpc->parse(
+    my $res = $rpc->parse(
         '{"jsonrpc": "2.0", "method": "update", "params": [1,2,3,4,5]}');
     ok !$res or diag explain $res;
 
@@ -82,8 +80,7 @@ subtest 'a Notification' => sub {
 };
 
 subtest 'rpc call of non-existent method' => sub {
-
-    $res = $rpc->parse('{"jsonrpc": "2.0", "method": "foobar", "id": "1"}');
+    my $res = $rpc->parse('{"jsonrpc": "2.0", "method": "foobar", "id": "1"}');
     is_deeply $coder->decode($res),
       $coder->decode(
         '{"jsonrpc": "2.0", "error": {"code": -32601, "message": "Method not found"}, "id": "1"}'
@@ -91,7 +88,7 @@ subtest 'rpc call of non-existent method' => sub {
 };
 
 subtest 'rpc call with invalid JSON' => sub {
-    $res = $rpc->parse(
+    my $res = $rpc->parse(
         '{"jsonrpc": "2.0", "method": "foobar, "params": "bar", "baz]');
     is_deeply $coder->decode($res),
       $coder->decode(
@@ -100,7 +97,7 @@ subtest 'rpc call with invalid JSON' => sub {
 };
 
 subtest 'rpc call with invalid Request object' => sub {
-    $res = $rpc->parse('{"jsonrpc": "2.0", "method": 1, "params": "bar"}');
+    my $res = $rpc->parse('{"jsonrpc": "2.0", "method": 1, "params": "bar"}');
     is_deeply $coder->decode($res),
       $coder->decode(
         '{"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}'
@@ -108,7 +105,7 @@ subtest 'rpc call with invalid Request object' => sub {
 };
 
 subtest 'rpc call Batch, invalid JSON' => sub {
-    $res = $rpc->parse(
+    my $res = $rpc->parse(
         '[
   {"jsonrpc": "2.0", "method": "sum", "params": [1,2,4], "id": "1"},
   {"jsonrpc": "2.0", "method"
@@ -121,7 +118,7 @@ subtest 'rpc call Batch, invalid JSON' => sub {
 };
 
 subtest 'rpc call with an empty Array' => sub {
-    $res = $rpc->parse('[]');
+    my $res = $rpc->parse('[]');
     is_deeply $coder->decode($res),
       $coder->decode(
         '{"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}'
@@ -129,7 +126,7 @@ subtest 'rpc call with an empty Array' => sub {
 };
 
 subtest 'rpc call with an invalid Batch (but not empty)' => sub {
-    $res = $rpc->parse('[1]');
+    my $res = $rpc->parse('[1]');
     is_deeply $coder->decode($res), $coder->decode(
         '[
   {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}
@@ -138,7 +135,7 @@ subtest 'rpc call with an invalid Batch (but not empty)' => sub {
 };
 
 subtest 'rpc call with invalid Batch' => sub {
-    $res = $rpc->parse('[1,2,3]');
+    my $res = $rpc->parse('[1,2,3]');
     is_deeply $coder->decode($res), $coder->decode(
         '[
   {"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null},
@@ -149,7 +146,7 @@ subtest 'rpc call with invalid Batch' => sub {
 };
 
 subtest 'rpc call Batch' => sub {
-    $res = $rpc->parse(
+    my $res = $rpc->parse(
         '[
         {"jsonrpc": "2.0", "method": "sum", "params": [1,2,4], "id": "1"},
         {"jsonrpc": "2.0", "method": "notify_hello", "params": [7]},
@@ -171,7 +168,7 @@ subtest 'rpc call Batch' => sub {
 };
 
 subtest 'rpc call Batch (all notifications)' => sub {
-    $res = $rpc->parse(
+    my $res = $rpc->parse(
         '[
         {"jsonrpc": "2.0", "method": "notify_sum", "params": [1,2,4]},
         {"jsonrpc": "2.0", "method": "notify_hello", "params": [7]}
