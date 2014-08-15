@@ -5,7 +5,8 @@ use Carp ();
 
 our $VERSION = "0.02";
 
-use Class::Accessor::Lite rw => [qw(jsonrpc id is_batch is_notification)];
+use Class::Accessor::Lite rw =>
+  [qw(jsonrpc id is_batch is_notification parsed)];
 use JSON::XS;
 use Router::Simple;
 use Try::Tiny;
@@ -16,7 +17,7 @@ use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
 sub new {
     my $class = shift;
     my $args;
-    $args->{coder} = JSON::XS->new->utf8;
+    $args->{coder}  = JSON::XS->new->utf8;
     $args->{router} = Router::Simple->new;
     $args->{procedure}
       = JSON::RPC::Spec::Procedure->new(router => $args->{router});
@@ -35,7 +36,7 @@ sub error {
     };
 }
 
-sub rpc_invalid_request {
+sub _rpc_invalid_request {
     my ($self) = @_;
     my $error = {
         code    => -32600,
@@ -46,7 +47,7 @@ sub rpc_invalid_request {
     return $self->error($error);
 }
 
-sub rpc_method_not_found {
+sub _rpc_method_not_found {
     my ($self) = @_;
     my $error = {
         code    => -32601,
@@ -55,7 +56,7 @@ sub rpc_method_not_found {
     return $self->error($error);
 }
 
-sub rpc_invalid_params {
+sub _rpc_invalid_params {
     my ($self) = @_;
     my $error = {
         code    => -32602,
@@ -64,7 +65,7 @@ sub rpc_invalid_params {
     return $self->error($error);
 }
 
-sub rpc_internal_error {
+sub _rpc_internal_error {
     my ($self, @args) = @_;
     my $error = {
         code    => -32603,
@@ -74,7 +75,7 @@ sub rpc_internal_error {
     return $self->error($error);
 }
 
-sub rpc_parse_error {
+sub _rpc_parse_error {
     my ($self) = @_;
     my $error = {
         code    => -32700,
@@ -84,62 +85,82 @@ sub rpc_parse_error {
     return $self->error($error);
 }
 
-# parse JSON string
-sub parse {
+sub _parse_json {
     my ($self, $json_string) = @_;
-    warn qq{-- start parsing @{[$json_string]}\n} if DEBUG;
-    my $coder = $self->{coder};
     unless (length $json_string) {
-        return $coder->encode($self->rpc_invalid_request);
+        return $self->_rpc_invalid_request;
     }
 
     # JSON decode
     # rpc call with invalid JSON:
     # rpc call Batch, invalid JSON:
-    my ($request, $has_error);
+    my ($req, $has_error);
     try {
-        $request = $coder->decode($json_string);
+        $req = $self->{coder}->decode($json_string);
     }
     catch {
         $has_error = 1;
-        $request   = $self->rpc_parse_error;
+        $req       = $self->_rpc_parse_error;
     };
     if ($has_error) {
-        return $coder->encode($request);
+        return $req;
     }
+    $self->parsed($req);
+    return;
+}
+
+sub _parse {
+    my ($self) = @_;
+
+    my $req = $self->parsed;
 
     # Batch mode flag
-    if (ref $request eq 'ARRAY') {
+    if (ref $req eq 'ARRAY') {
         $self->is_batch(1);
     }
     else {
         $self->is_batch(0);
-        $request = [$request];
+        $req = [$req];
     }
 
     # rpc call with an empty Array:
-    unless (scalar @{$request}) {
-        return $coder->encode($self->rpc_invalid_request);
+    unless (scalar @{$req}) {
+        return $self->_rpc_invalid_request;
     }
 
     # procedure call and create response
     my @response;
-    for my $obj (@{$request}) {
+    for my $obj (@{$req}) {
         my $res = $self->{procedure}->parse($obj);
 
         # notification is ignore
         push @response, $res if $res;
     }
-    my $result;
     if (@response) {
         if ($self->is_batch) {
-            $result = $coder->encode(\@response);
+            return [@response];
         }
         else {
-            $result = $coder->encode($response[0]);
+            return $response[0];
         }
     }
-    return $result;
+    return;
+}
+
+# parse JSON string
+sub parse_without_encode {
+    my ($self, $json_string) = @_;
+    my $result = $self->_parse_json($json_string);
+    return $result if $result;
+    return $self->_parse;
+}
+
+sub parse {
+    my ($self, $json_string) = @_;
+    warn qq{-- start parsing @{[$json_string]}\n} if DEBUG;
+    my $result = $self->parse_without_encode($json_string);
+    return unless $result;
+    return $self->{coder}->encode($result);
 }
 
 # register method
@@ -190,15 +211,30 @@ create instance
     use List::Util qw(max);
     $rpc->register(max => sub { max(@{$_[0]}) });
 
-register method
+    # method matching via Router::Simple
+    $rpc->register('myapp.{action}' => sub {
+        my ($params, $match) = @_;
+        my $action = $match->{action};
+        return MyApp->new->$action($params);
+    });
+
+register method.
 
 =head2 parse
 
     my $result = $rpc->parse(
         '{"jsonrpc": "2.0", "method": "max", "params": [9,4,11,0], "id": 1}'
-    );    # -> {"id":1,"result":11,"jsonrpc":"2.0"}
+    );    # returns JSON encoded string -> {"id":1,"result":11,"jsonrpc":"2.0"}
 
-parse JSON and triggered method
+parse JSON and triggered method. returns JSON encoded string.
+
+=head2 parse_without_encode
+
+    my $result = $rpc->parse_without_encode(
+        '{"jsonrpc": "2.0", "method": "max", "params": [9,4,11,0], "id": 1}'
+    );    # returns hash -> {id => 1, result => 11, jsonrpc => '2.0'}
+
+parse JSON and triggered method. returns HASH.
 
 =head1 DEBUGGING
 

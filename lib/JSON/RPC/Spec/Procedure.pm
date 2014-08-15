@@ -21,7 +21,7 @@ sub new {
 sub parse {
     my ($self, $obj) = @_;
     if (ref $obj ne 'HASH' or !exists $obj->{jsonrpc}) {
-        return $self->rpc_invalid_request;
+        return $self->_rpc_invalid_request;
     }
     $self->is_notification(!exists $obj->{id} and $obj->{jsonrpc} eq '2.0');
     $self->jsonrpc($obj->{jsonrpc});
@@ -32,7 +32,7 @@ sub parse {
     # rpc call with an invalid Batch (but not empty):
     # rpc call with invalid Batch:
     if ($method eq '' or $method =~ m!\A\.|\A[0-9]+\z!) {
-        return $self->rpc_invalid_request;
+        return $self->_rpc_invalid_request;
     }
     my ($result, $error);
     try {
@@ -41,10 +41,10 @@ sub parse {
     catch {
         my $e = $_;
         if ($e =~ m!rpc_method_not_found!) {
-            $error = $self->rpc_method_not_found;
+            $error = $self->_rpc_method_not_found;
         }
         else {
-            $error = $self->rpc_internal_error(data => $e);
+            $error = $self->_rpc_internal_error(data => $e);
         }
     };
     if ($self->is_notification) {

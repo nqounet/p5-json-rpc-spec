@@ -42,7 +42,7 @@ subtest 'normal match' => sub {
     like $res, qr/"result":{}/, 'return empty hash' or diag explain $res;
 };
 
-subtest 'no  match' => sub {
+subtest 'no match' => sub {
     my $res
       = $rpc->parse('{"jsonrpc":"2.0","method":"test.ok/","params":1,"id":1}');
     like $res, qr/"Method not found"/, 'method not found' or diag explain $res;

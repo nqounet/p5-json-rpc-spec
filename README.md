@@ -34,15 +34,30 @@ create instance
     use List::Util qw(max);
     $rpc->register(max => sub { max(@{$_[0]}) });
 
-register method
+    # method matching via Router::Simple
+    $rpc->register('myapp.{action}' => sub {
+        my ($params, $match) = @_;
+        my $action = $match->{action};
+        return MyApp->new->$action($params);
+    });
+
+register method.
 
 ## parse
 
     my $result = $rpc->parse(
         '{"jsonrpc": "2.0", "method": "max", "params": [9,4,11,0], "id": 1}'
-    );    # -> {"id":1,"result":11,"jsonrpc":"2.0"}
+    );    # returns JSON encoded string -> {"id":1,"result":11,"jsonrpc":"2.0"}
 
-parse JSON and triggered method
+parse JSON and triggered method. returns JSON encoded string.
+
+## parse\_without\_encode
+
+    my $result = $rpc->parse_without_encode(
+        '{"jsonrpc": "2.0", "method": "max", "params": [9,4,11,0], "id": 1}'
+    );    # returns hash -> {id => 1, result => 11, jsonrpc => '2.0'}
+
+parse JSON and triggered method. returns HASH.
 
 # DEBUGGING
 
