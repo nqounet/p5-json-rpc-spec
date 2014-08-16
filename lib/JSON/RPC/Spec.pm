@@ -170,8 +170,14 @@ sub parse {
 
 # register method
 sub register {
-    my ($self, $name, $cb) = @_;
-    $self->{router}->connect($name, {'.callback' => $cb}, {});
+    my ($self, $pattern, $cb) = @_;
+    if (!defined $pattern) {
+        Carp::croak('pattern required');
+    }
+    if (ref $cb ne 'CODE') {
+        Carp::croak('code required');
+    }
+    $self->{router}->connect($pattern, {'.callback' => $cb}, {});
     return $self;
 }
 

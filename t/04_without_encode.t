@@ -29,7 +29,7 @@ subtest 'parse' => sub {
         my $res = $rpc->parse_without_encode($json_string);
         ok $res, 'parse_without_encode ok' or diag explain $json_string;
         is_deeply $res,
-          +{
+          {
             jsonrpc => '2.0',
             id      => $id,
             result  => $content
@@ -39,7 +39,18 @@ subtest 'parse' => sub {
     }
 };
 
-subtest 'error' => sub {
+subtest 'register error' => sub {
+    my $register;
+    eval { $register = $rpc->register };
+    ok $@, 'register requires params';
+    like $@, qr/pattern required/ or diag explain $@;
+
+    eval { $register = $rpc->register('pattern') };
+    ok $@, 'register requires code reference';
+    like $@, qr/code required/ or diag explain $@;
+};
+
+subtest 'parse error' => sub {
     my $res;
     $res = $rpc->parse_without_encode('');
     is ref $res, 'HASH';
