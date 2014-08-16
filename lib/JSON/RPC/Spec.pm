@@ -27,7 +27,7 @@ sub new {
 }
 
 # universal error routine
-sub error {
+sub _error {
     my ($self, $error) = @_;
     return +{
         jsonrpc => $self->jsonrpc,
@@ -44,7 +44,7 @@ sub _rpc_invalid_request {
     };
     $self->is_notification(undef);
     $self->id(undef);
-    return $self->error($error);
+    return $self->_error($error);
 }
 
 sub _rpc_method_not_found {
@@ -53,7 +53,7 @@ sub _rpc_method_not_found {
         code    => -32601,
         message => 'Method not found'
     };
-    return $self->error($error);
+    return $self->_error($error);
 }
 
 sub _rpc_invalid_params {
@@ -62,7 +62,7 @@ sub _rpc_invalid_params {
         code    => -32602,
         message => 'Invalid params'
     };
-    return $self->error($error);
+    return $self->_error($error);
 }
 
 sub _rpc_internal_error {
@@ -72,7 +72,7 @@ sub _rpc_internal_error {
         message => 'Internal error',
         @args
     };
-    return $self->error($error);
+    return $self->_error($error);
 }
 
 sub _rpc_parse_error {
@@ -82,7 +82,7 @@ sub _rpc_parse_error {
         message => 'Parse error'
     };
     $self->id(undef);
-    return $self->error($error);
+    return $self->_error($error);
 }
 
 sub _parse_json {
@@ -147,7 +147,7 @@ sub _parse {
     return;
 }
 
-# parse JSON string
+# parse JSON string to hash
 sub parse_without_encode {
     my ($self, $json_string) = @_;
     my $result = $self->_parse_json($json_string);
@@ -155,6 +155,7 @@ sub parse_without_encode {
     return $self->_parse;
 }
 
+# parse JSON string to JSON string
 sub parse {
     my ($self, $json_string) = @_;
     warn qq{-- start parsing @{[$json_string]}\n} if DEBUG;
