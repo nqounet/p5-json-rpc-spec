@@ -16,9 +16,13 @@ use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
 
 sub new {
     my $class = shift;
-    my $args;
-    $args->{coder}  = JSON::XS->new->utf8;
-    $args->{router} = Router::Simple->new;
+    my $args = @_ == 1 ? $_[0] : +{@_};
+    if (!exists $args->{coder}) {
+        $args->{coder} = JSON::XS->new->utf8;
+    }
+    if (!exists $args->{router}) {
+        $args->{router} = Router::Simple->new;
+    }
     $args->{procedure}
       = JSON::RPC::Spec::Procedure->new(router => $args->{router});
     my $self = bless $args, $class;
@@ -150,6 +154,7 @@ sub _parse {
 # parse JSON string to hash
 sub parse_without_encode {
     my ($self, $json_string) = @_;
+    warn qq{-- start parsing @{[$json_string]}\n} if DEBUG;
     my $result = $self->_parse_json($json_string);
     return $result if $result;
     return $self->_parse;
@@ -158,7 +163,6 @@ sub parse_without_encode {
 # parse JSON string to JSON string
 sub parse {
     my ($self, $json_string) = @_;
-    warn qq{-- start parsing @{[$json_string]}\n} if DEBUG;
     my $result = $self->parse_without_encode($json_string);
     return unless $result;
     return $self->{coder}->encode($result);
