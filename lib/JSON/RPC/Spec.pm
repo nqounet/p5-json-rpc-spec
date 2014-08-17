@@ -7,7 +7,7 @@ our $VERSION = "0.02";
 
 use Class::Accessor::Lite rw =>
   [qw(jsonrpc id is_batch is_notification parsed)];
-use JSON::XS;
+use JSON::MaybeXS qw(JSON);
 use Router::Simple;
 use Try::Tiny;
 use JSON::RPC::Spec::Procedure;
@@ -18,7 +18,7 @@ sub new {
     my $class = shift;
     my $args = @_ == 1 ? $_[0] : +{@_};
     if (!exists $args->{coder}) {
-        $args->{coder} = JSON::XS->new->utf8;
+        $args->{coder} = JSON->new->utf8;
     }
     if (!exists $args->{router}) {
         $args->{router} = Router::Simple->new;

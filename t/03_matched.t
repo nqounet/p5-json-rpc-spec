@@ -2,10 +2,10 @@ use strict;
 use Test::More 0.98;
 
 use JSON::RPC::Spec;
-use JSON::XS;
+use JSON::MaybeXS;
 
 my $rpc   = JSON::RPC::Spec->new;
-my $coder = JSON::XS->new->utf8;
+my $coder = JSON->new->utf8;
 
 $rpc->register(
     'test.{matched}' => sub {

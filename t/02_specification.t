@@ -2,7 +2,7 @@ use strict;
 use Test::More 0.98;
 
 use JSON::RPC::Spec;
-use JSON::XS;
+use JSON::MaybeXS;
 
 # JSON-RPC 2.0 Specification
 # http://www.jsonrpc.org/specification#examples
@@ -35,7 +35,7 @@ $rpc->register(get_data     => sub { ['hello', 5] });
 $rpc->register(notify_sum   => sub {1});
 $rpc->register(notify_hello => sub {1});
 
-my $coder = JSON::XS->new->utf8;
+my $coder = JSON->new->utf8;
 
 subtest 'rpc call with positional parameters' => sub {
     my $res
