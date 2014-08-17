@@ -75,3 +75,61 @@ sub trigger {
 }
 
 1;
+__END__
+
+=encoding utf-8
+
+=head1 NAME
+
+JSON::RPC::Spec::Procedure - Subclass of JSON::RPC::Spec
+
+=head1 SYNOPSIS
+
+    use strict;
+    use Router::Simple;
+    use JSON::RPC::Spec::Procedure;
+
+    my $router = Router::Simple->new;
+    $router->connect(
+        echo => {
+            '.callback' => sub { $_[0] }
+        }
+    );
+    my $proc = JSON::RPC::Spec::Procedure->new(router => $router);
+    my $res = $proc->parse(
+        {
+            jsonrpc => '2.0',
+            method  => 'echo',
+            params  => 'Hello, World!',
+            id      => 1
+        }
+    ); # return hash ->
+       #    {
+       #        jsonrpc => '2.0',
+       #        result  => 'Hello, World!',
+       #        id      => 1
+       #    },
+
+=head1 DESCRIPTION
+
+JSON::RPC::Spec is Subclass of JSON::RPC::Spec.
+
+=head1 FUNCTIONS
+
+=head2 new
+
+=head2 parse
+
+=head2 trigger
+
+=head1 LICENSE
+
+Copyright (C) nqounet.
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
+=head1 AUTHOR
+
+nqounet E<lt>mail@nqou.netE<gt>
+
+=cut

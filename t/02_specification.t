@@ -4,6 +4,9 @@ use Test::More 0.98;
 use JSON::RPC::Spec;
 use JSON::XS;
 
+# JSON-RPC 2.0 Specification
+# http://www.jsonrpc.org/specification#examples
+
 my $rpc = new_ok 'JSON::RPC::Spec';
 
 $rpc->register(
