@@ -41,10 +41,13 @@
          }
       },
       "runtime" : {
+         "recommends" : {
+            "Cpanel::JSON::XS" : "0"
+         },
          "requires" : {
-            "JSON::XS" : "3.01",
-            "Router::Simple" : "0.15",
-            "Try::Tiny" : "0.22",
+            "JSON::MaybeXS" : "0",
+            "Router::Simple" : "0",
+            "Try::Tiny" : "0",
             "perl" : "5.008001"
          }
       },

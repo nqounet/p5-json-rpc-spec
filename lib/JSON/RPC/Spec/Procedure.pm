@@ -23,7 +23,7 @@ sub parse {
     if (ref $obj ne 'HASH' or !exists $obj->{jsonrpc}) {
         return $self->_rpc_invalid_request;
     }
-    $self->is_notification(!exists $obj->{id} and $obj->{jsonrpc} eq '2.0');
+    $self->is_notification(!exists $obj->{id});
     $self->jsonrpc($obj->{jsonrpc});
     $self->id($obj->{id});
     my $method = $obj->{method};
@@ -34,23 +34,27 @@ sub parse {
     if ($method eq '' or $method =~ m!\A\.|\A[0-9]+\z!) {
         return $self->_rpc_invalid_request;
     }
-    my ($result, $error);
+    my ($result, $err);
     try {
         $result = $self->trigger($method, $obj->{params});
     }
     catch {
-        my $e = $_;
-        if ($e =~ m!rpc_method_not_found!) {
-            $error = $self->_rpc_method_not_found;
-        }
-        else {
-            $error = $self->_rpc_internal_error(data => $e);
-        }
+        $err = $_;
     };
     if ($self->is_notification) {
         return;
     }
-    if ($error) {
+    if ($err) {
+        my $error;
+        if ($err =~ m!rpc_method_not_found!) {
+            $error = $self->_rpc_method_not_found;
+        }
+        elsif ($err =~ m!rpc_invalid_params!) {
+            $error = $self->_rpc_invalid_params;
+        }
+        else {
+            $error = $self->_rpc_internal_error(data => $err);
+        }
         return $error;
     }
     return +{

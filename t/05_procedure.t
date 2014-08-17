@@ -15,6 +15,12 @@ my $proc = JSON::RPC::Spec::Procedure->new(router => $router);
 ok $proc,     'new';
 isa_ok $proc, 'JSON::RPC::Spec::Procedure';
 
+subtest 'new hashref' => sub {
+    my $proc = JSON::RPC::Spec::Procedure->new({router => $router});
+    ok $proc,     'new';
+    isa_ok $proc, 'JSON::RPC::Spec::Procedure';
+};
+
 subtest 'parse' => sub {
     my $res = $proc->parse(
         {

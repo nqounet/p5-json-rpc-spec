@@ -3,9 +3,15 @@ use Test::More 0.98;
 
 use JSON::RPC::Spec;
 use JSON::MaybeXS;
+use Router::Simple;
 
-my $rpc   = JSON::RPC::Spec->new;
-my $coder = JSON->new->utf8;
+my $coder  = JSON->new->utf8;
+my $router = Router::Simple->new;
+my $rpc    = JSON::RPC::Spec->new(
+    coder  => $coder,
+    router => $router
+);
+isa_ok $rpc, 'JSON::RPC::Spec';
 
 $rpc->register(
     'test.{matched}' => sub {
@@ -31,9 +37,10 @@ subtest 'placeholder' => sub {
       = $rpc->parse('{"jsonrpc":"2.0","method":"test.ok","params":1,"id":1}');
     like $res, qr/"result":{"matched":"ok"}/, 'return ok' or diag explain $res;
 
-    $res
-      = $rpc->parse('{"jsonrpc":"2.0","method":"test.ok.ok","params":1,"id":1}');
-    like $res, qr/"result":{"matched":"ok\.ok"}/, 'return ok.ok' or diag explain $res;
+    $res = $rpc->parse(
+        '{"jsonrpc":"2.0","method":"test.ok.ok","params":1,"id":1}');
+    like $res, qr/"result":{"matched":"ok\.ok"}/, 'return ok.ok'
+      or diag explain $res;
 };
 
 subtest 'normal match' => sub {

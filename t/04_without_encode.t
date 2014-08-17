@@ -12,7 +12,7 @@ subtest 'register' => sub {
     ok $register, 'method register';
     is ref $register, 'JSON::RPC::Spec', 'instance of `JSON::RPC::Spec`'
       or diag explain $register;
-    $rpc->register(emit_error => sub {die});
+    $rpc->register(emit_error => sub { die $_[0] });
 };
 
 subtest 'parse' => sub {
@@ -119,7 +119,7 @@ subtest 'parse error' => sub {
     is ref $res->[0], 'HASH';
     ok exists $res->[0]{error};
     is $res->[0]{error}{message}, 'Invalid Request',
-      'method start at dot -> Invalid Request';
+      'method number only -> Invalid Request';
 
     $res = $rpc->parse_without_encode(
         '[{"jsonrpc":"2.0","method":"404notfount","id":1}]');
@@ -142,6 +142,17 @@ subtest 'parse error' => sub {
     $res = $rpc->parse_without_encode(
         '[{"jsonrpc":"2.0","method":"emit_error"}]');
     ok !$res, 'Internal error -> notification';
+
+    $res = $rpc->parse_without_encode(
+        '[{"jsonrpc":"2.0","method":"emit_error","params":"rpc_invalid_params","id":1}]');
+    is ref $res, 'ARRAY';
+    is ref $res->[0], 'HASH';
+    ok exists $res->[0]{error};
+    is $res->[0]{error}{message}, 'Invalid params', 'Invalid params';
+
+    $res = $rpc->parse_without_encode(
+        '[{"jsonrpc":"2.0","method":"emit_error","params":"rpc_invalid_params"}]');
+    ok !$res, 'Invalid params -> notification';
 };
 
 done_testing;
