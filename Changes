@@ -2,6 +2,12 @@ Revision history for Perl extension JSON-RPC-Spec
 
 {{$NEXT}}
 
+0.03 2014-08-17T14:33:56Z
+
+    - from JSON::XS to JSON::MaybeXS
+    - add new options
+    - add method `parse_without_encode`
+
 0.02 2014-08-14T09:08:26Z
 
     - add param matched hash (via Router::Simple)

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Carp ();
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 
 use Class::Accessor::Lite rw =>
   [qw(jsonrpc id is_batch is_notification parsed)];
