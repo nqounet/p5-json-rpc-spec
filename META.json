@@ -46,6 +46,7 @@
          },
          "requires" : {
             "JSON::MaybeXS" : "0",
+            "Moo" : "0",
             "Router::Simple" : "0",
             "Try::Tiny" : "0",
             "perl" : "5.008001"
