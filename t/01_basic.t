@@ -1,5 +1,6 @@
 use strict;
 use Test::More 0.98;
+use Test::Fatal;
 
 use JSON::RPC::Spec;
 use JSON::MaybeXS;
@@ -25,7 +26,10 @@ subtest 'parse' => sub {
                 params  => $content
             }
         );
-        my $result = $rpc->parse($json_string);
+        my $result;
+        is(exception { $result = $rpc->parse($json_string); }, undef, 'parse')
+          or diag explain $result;
+
         ok $result, 'parse ok';
         is_deeply $coder->decode($result),
           +{

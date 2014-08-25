@@ -5,8 +5,6 @@ use Carp ();
 
 our $VERSION = "0.03";
 
-use Class::Accessor::Lite rw =>
-  [qw(jsonrpc id is_batch is_notification parsed)];
 use JSON::MaybeXS qw(JSON);
 use Router::Simple;
 use Try::Tiny;
@@ -14,84 +12,47 @@ use JSON::RPC::Spec::Procedure;
 
 use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
 
-sub new {
-    my $class = shift;
-    my $args = @_ == 1 ? $_[0] : +{@_};
-    if (!exists $args->{coder}) {
-        $args->{coder} = JSON->new->utf8;
-    }
-    if (!exists $args->{router}) {
-        $args->{router} = Router::Simple->new;
-    }
-    $args->{procedure}
-      = JSON::RPC::Spec::Procedure->new(router => $args->{router});
-    my $self = bless $args, $class;
-    $self->jsonrpc('2.0');
-    return $self;
-}
+use Moo;
 
-# universal error routine
-sub _error {
-    my ($self, $error) = @_;
-    return +{
-        jsonrpc => $self->jsonrpc,
-        error   => $error,
-        id      => $self->id
-    };
-}
+has coder => (
+    is      => 'ro',
+    default => sub { JSON->new->utf8 },
+    isa     => sub {
+        my $self = shift;
+        $self->can('encode') or Carp::croak('method encode required.');
+        $self->can('decode') or Carp::croak('method decode required.');
+    },
+);
+has router => (
+    is      => 'ro',
+    default => sub { Router::Simple->new },
+    isa     => sub {
+        my $self = shift;
+        $self->can('match') or Carp::croak('method match required.');
+    },
+);
+has procedure => (
+    is   => 'ro',
+    lazy => 1,
+    default =>
+      sub { JSON::RPC::Spec::Procedure->new(router => shift->router) },
+);
+has jsonrpc => (
+    is      => 'ro',
+    default => '2.0',
+);
+has id              => (is => 'rw');
+has is_batch        => (is => 'rw');
+has is_notification => (is => 'rw');
+has content         => (is => 'rw');
 
-sub _rpc_invalid_request {
-    my ($self) = @_;
-    my $error = {
-        code    => -32600,
-        message => 'Invalid Request'
-    };
-    $self->is_notification(undef);
-    $self->id(undef);
-    return $self->_error($error);
-}
-
-sub _rpc_method_not_found {
-    my ($self) = @_;
-    my $error = {
-        code    => -32601,
-        message => 'Method not found'
-    };
-    return $self->_error($error);
-}
-
-sub _rpc_invalid_params {
-    my ($self) = @_;
-    my $error = {
-        code    => -32602,
-        message => 'Invalid params'
-    };
-    return $self->_error($error);
-}
-
-sub _rpc_internal_error {
-    my ($self, @args) = @_;
-    my $error = {
-        code    => -32603,
-        message => 'Internal error',
-        @args
-    };
-    return $self->_error($error);
-}
-
-sub _rpc_parse_error {
-    my ($self) = @_;
-    my $error = {
-        code    => -32700,
-        message => 'Parse error'
-    };
-    $self->id(undef);
-    return $self->_error($error);
-}
+with 'JSON::RPC::Spec::Role::Error';
 
 sub _parse_json {
-    my ($self, $json_string) = @_;
-    unless (length $json_string) {
+    my ($self) = @_;
+    warn qq{-- start parsing @{[$self->content]}\n} if DEBUG;
+
+    unless (length $self->content) {
         return $self->_rpc_invalid_request;
     }
 
@@ -100,7 +61,7 @@ sub _parse_json {
     # rpc call Batch, invalid JSON:
     my ($req, $has_error);
     try {
-        $req = $self->{coder}->decode($json_string);
+        $req = $self->coder->decode($self->content);
     }
     catch {
         $has_error = 1;
@@ -109,14 +70,6 @@ sub _parse_json {
     if ($has_error) {
         return $req;
     }
-    $self->parsed($req);
-    return;
-}
-
-sub _parse {
-    my ($self) = @_;
-
-    my $req = $self->parsed;
 
     # Batch mode flag
     if (ref $req eq 'ARRAY') {
@@ -135,7 +88,7 @@ sub _parse {
     # procedure call and create response
     my @response;
     for my $obj (@{$req}) {
-        my $res = $self->{procedure}->parse($obj);
+        my $res = $self->procedure->parse($obj);
 
         # notification is ignore
         push @response, $res if $res;
@@ -154,18 +107,17 @@ sub _parse {
 # parse JSON string to hash
 sub parse_without_encode {
     my ($self, $json_string) = @_;
-    warn qq{-- start parsing @{[$json_string]}\n} if DEBUG;
-    my $result = $self->_parse_json($json_string);
-    return $result if $result;
-    return $self->_parse;
+    $self->content($json_string);
+    return $self->_parse_json;
 }
 
 # parse JSON string to JSON string
 sub parse {
     my ($self, $json_string) = @_;
-    my $result = $self->parse_without_encode($json_string);
+    $self->content($json_string);
+    my $result = $self->_parse_json;
     return unless $result;
-    return $self->{coder}->encode($result);
+    return $self->coder->encode($result);
 }
 
 # register method
@@ -177,7 +129,7 @@ sub register {
     if (ref $cb ne 'CODE') {
         Carp::croak('code required');
     }
-    $self->{router}->connect($pattern, {'.callback' => $cb}, {});
+    $self->router->connect($pattern, {'.callback' => $cb}, {});
     return $self;
 }
 
