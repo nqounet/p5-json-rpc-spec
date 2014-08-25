@@ -1,4 +1,4 @@
-package JSON::RPC::Spec::Role::Error;
+package JSON::RPC::Spec::Common;
 use strict;
 use warnings;
 use Carp ();
@@ -6,6 +6,11 @@ use Carp ();
 use Moo::Role;
 
 requires qw(jsonrpc id is_notification);
+
+has callback_key => (
+    is      => 'ro',
+    default => '.callback'
+);
 
 sub _error {
     my ($self, $error) = @_;

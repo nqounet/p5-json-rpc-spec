@@ -23,7 +23,7 @@ has jsonrpc => (
 has id              => (is => 'rw');
 has is_notification => (is => 'rw');
 
-with 'JSON::RPC::Spec::Role::Error';
+with 'JSON::RPC::Spec::Common';
 
 sub parse {
     my ($self, $obj) = @_;
@@ -80,7 +80,7 @@ sub trigger {
     unless ($matched) {
         Carp::confess 'rpc_method_not_found';
     }
-    my $cb = delete $matched->{'.callback'};
+    my $cb = delete $matched->{$self->callback_key};
     return $cb->($params, $matched);
 }
 

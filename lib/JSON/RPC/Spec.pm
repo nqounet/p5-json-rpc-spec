@@ -46,7 +46,7 @@ has is_batch        => (is => 'rw');
 has is_notification => (is => 'rw');
 has content         => (is => 'rw');
 
-with 'JSON::RPC::Spec::Role::Error';
+with 'JSON::RPC::Spec::Common';
 
 sub _parse_json {
     my ($self) = @_;
@@ -129,7 +129,7 @@ sub register {
     if (ref $cb ne 'CODE') {
         Carp::croak('code required');
     }
-    $self->router->connect($pattern, {'.callback' => $cb}, {});
+    $self->router->connect($pattern, {$self->callback_key => $cb}, {});
     return $self;
 }
 
