@@ -3,30 +3,36 @@ use strict;
 use warnings;
 use Carp ();
 
-use parent 'JSON::RPC::Spec';
+use Moo;
 use Try::Tiny;
 
 use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_PROCEDURE_DEBUG} || 0;
 
-sub new {
-    my $class = shift;
-    my $args = @_ == 1 ? $_[0] : +{@_};
-    if (!exists $args->{router}) {
-        Carp::confess 'router requred';
-    }
-    my $self = bless $args, $class;
-    return $self;
-}
+has router => (
+    is       => 'ro',
+    required => 1,
+    isa      => sub {
+        my $self = shift;
+        $self->can('match') or Carp::croak('method match required.');
+    },
+);
+has jsonrpc => (
+    is      => 'ro',
+    default => '2.0',
+);
+has id              => (is => 'rw');
+has is_notification => (is => 'rw');
+
+with 'JSON::RPC::Spec::Common';
 
 sub parse {
     my ($self, $obj) = @_;
-    if (ref $obj ne 'HASH' or !exists $obj->{jsonrpc}) {
+    if (ref $obj ne 'HASH') {
         return $self->_rpc_invalid_request;
     }
     $self->is_notification(!exists $obj->{id});
-    $self->jsonrpc($obj->{jsonrpc});
     $self->id($obj->{id});
-    my $method = $obj->{method};
+    my $method = $obj->{method} || '';
 
     # rpc call with invalid Request object:
     # rpc call with an invalid Batch (but not empty):
@@ -40,6 +46,7 @@ sub parse {
     }
     catch {
         $err = $_;
+        warn qq{-- error : @{[$err]} } if DEBUG;
     };
     if ($self->is_notification) {
         return;
@@ -67,14 +74,14 @@ sub parse {
 # trigger registered method
 sub trigger {
     my ($self, $name, $params) = @_;
-    my $router  = $self->{router};
+    my $router  = $self->router;
     my $matched = $router->match($name);
 
     # rpc call of non-existent method:
     unless ($matched) {
         Carp::confess 'rpc_method_not_found';
     }
-    my $cb = delete $matched->{'.callback'};
+    my $cb = delete $matched->{$self->callback_key};
     return $cb->($params, $matched);
 }
 

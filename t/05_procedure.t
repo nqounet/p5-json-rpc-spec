@@ -1,5 +1,6 @@
 use strict;
 use Test::More 0.98;
+use Test::Fatal;
 
 use Router::Simple;
 use JSON::RPC::Spec::Procedure;
@@ -49,9 +50,9 @@ subtest 'trigger' => sub {
 
 subtest 'router missing' => sub {
     my $res;
-    eval { $res = JSON::RPC::Spec::Procedure->new; };
-    ok $@;
-    like $@, qr/router requred/, 'router requred';
+    like(exception { $res = JSON::RPC::Spec::Procedure->new },
+        qr/\QMissing required arguments\E/, 'router requred')
+      or diag explain $res;
 };
 
 done_testing;
