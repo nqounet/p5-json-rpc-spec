@@ -46,6 +46,7 @@ sub parse {
     }
     catch {
         $err = $_;
+        warn qq{-- error : @{[$err]} } if DEBUG;
     };
     if ($self->is_notification) {
         return;

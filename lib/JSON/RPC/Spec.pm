@@ -59,16 +59,16 @@ sub _parse_json {
     # JSON decode
     # rpc call with invalid JSON:
     # rpc call Batch, invalid JSON:
-    my ($req, $has_error);
+    my ($req, $err);
     try {
         $req = $self->coder->decode($self->content);
     }
     catch {
-        $has_error = 1;
-        $req       = $self->_rpc_parse_error;
+        $err = $_;
+        warn qq{-- error : @{[$err]} } if DEBUG;
     };
-    if ($has_error) {
-        return $req;
+    if ($err) {
+        return $self->_rpc_parse_error;
     }
 
     # Batch mode flag
