@@ -3,16 +3,18 @@ use Test::More 0.98;
 use Test::Fatal;
 
 use JSON::RPC::Spec;
-use JSON::MaybeXS;
+use JSON::MaybeXS qw(JSON);
 
-my $rpc   = new_ok 'JSON::RPC::Spec';
+my $rpc;
+is(exception { $rpc = JSON::RPC::Spec->new }, undef, 'new')
+  or diag explain $rpc;
+
 my $coder = JSON->new->utf8;
 
 subtest 'register' => sub {
     my $register = $rpc->register(echo => sub { $_[0] });
     ok $register, 'method register';
-    is ref $register, 'JSON::RPC::Spec', 'instance of `JSON::RPC::Spec`'
-      or diag explain $register;
+    isa_ok $register, 'JSON::RPC::Spec' or diag explain $register;
 };
 
 subtest 'parse' => sub {

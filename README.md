@@ -9,10 +9,16 @@ JSON::RPC::Spec - Yet another JSON-RPC 2.0 Implementation
     use JSON::RPC::Spec;
 
     my $rpc = JSON::RPC::Spec->new;
+
+    # server
     $rpc->register(echo => sub { $_[0] });
     print $rpc->parse(
         '{"jsonrpc": "2.0", "method": "echo", "params": "Hello, World!", "id": 1}'
     );    # -> {"jsonrpc":"2.0","result":"Hello, World!","id":1}
+
+    # client
+    print $rpc->compose(echo => 'Hello, World!', 1);
+      # -> {"jsonrpc":"2.0","method":"echo","params":"Hello, World!","id":1}
 
 # DESCRIPTION
 
@@ -58,6 +64,13 @@ parse JSON and triggered method. returns JSON encoded string.
     );    # returns hash -> {id => 1, result => 11, jsonrpc => '2.0'}
 
 parse JSON and triggered method. returns HASH.
+
+## compose
+
+    my $json_string = $rpc->compose(max => [9,4,11,0], 1);
+    # returns JSON encoded string -> {"id":1,"jsonrpc":"2.0","method":"max","params":[9,4,11,0]}
+
+parse JSON and triggered method. returns JSON encoded string.
 
 # DEBUGGING
 

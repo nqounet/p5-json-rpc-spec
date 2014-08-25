@@ -3,50 +3,43 @@ use strict;
 use warnings;
 use Carp ();
 
-our $VERSION = "0.03";
+use version; our $VERSION = version->declare("v1.0.0");
 
-use JSON::MaybeXS qw(JSON);
 use Router::Simple;
 use Try::Tiny;
 use JSON::RPC::Spec::Procedure;
+use JSON::RPC::Spec::Client;
+
+use Moo;
+with 'JSON::RPC::Spec::Common';
 
 use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
 
-use Moo;
-
-has coder => (
+has client => (
     is      => 'ro',
-    default => sub { JSON->new->utf8 },
-    isa     => sub {
-        my $self = shift;
-        $self->can('encode') or Carp::croak('method encode required.');
-        $self->can('decode') or Carp::croak('method decode required.');
-    },
+    default => sub { JSON::RPC::Spec::Client->new },
+    handles => [qw(compose)],
 );
+
 has router => (
-    is      => 'ro',
+    is       => 'ro',
     default => sub { Router::Simple->new },
-    isa     => sub {
+    isa      => sub {
         my $self = shift;
         $self->can('match') or Carp::croak('method match required.');
     },
 );
+
 has procedure => (
     is   => 'ro',
     lazy => 1,
     default =>
       sub { JSON::RPC::Spec::Procedure->new(router => shift->router) },
 );
-has jsonrpc => (
-    is      => 'ro',
-    default => '2.0',
-);
-has id              => (is => 'rw');
-has is_batch        => (is => 'rw');
-has is_notification => (is => 'rw');
-has content         => (is => 'rw');
 
-with 'JSON::RPC::Spec::Common';
+has is_batch => (is => 'rw');
+
+has content => (is => 'rw');
 
 sub _parse_json {
     my ($self) = @_;
@@ -129,10 +122,9 @@ sub register {
     if (ref $cb ne 'CODE') {
         Carp::croak('code required');
     }
-    $self->router->connect($pattern, {$self->callback_key => $cb}, {});
+    $self->router->connect($pattern, {$self->_callback_key => $cb}, {});
     return $self;
 }
-
 
 1;
 __END__
@@ -149,10 +141,16 @@ JSON::RPC::Spec - Yet another JSON-RPC 2.0 Implementation
     use JSON::RPC::Spec;
 
     my $rpc = JSON::RPC::Spec->new;
+
+    # server
     $rpc->register(echo => sub { $_[0] });
     print $rpc->parse(
         '{"jsonrpc": "2.0", "method": "echo", "params": "Hello, World!", "id": 1}'
     );    # -> {"jsonrpc":"2.0","result":"Hello, World!","id":1}
+
+    # client
+    print $rpc->compose(echo => 'Hello, World!', 1);
+      # -> {"jsonrpc":"2.0","method":"echo","params":"Hello, World!","id":1}
 
 =head1 DESCRIPTION
 
@@ -198,6 +196,13 @@ parse JSON and triggered method. returns JSON encoded string.
     );    # returns hash -> {id => 1, result => 11, jsonrpc => '2.0'}
 
 parse JSON and triggered method. returns HASH.
+
+=head2 compose
+
+    my $json_string = $rpc->compose(max => [9,4,11,0], 1);
+    # returns JSON encoded string -> {"id":1,"jsonrpc":"2.0","method":"max","params":[9,4,11,0]}
+
+parse JSON and triggered method. returns JSON encoded string.
 
 =head1 DEBUGGING
 

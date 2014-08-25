@@ -3,10 +3,12 @@ use strict;
 use warnings;
 use Carp ();
 
-use Moo;
 use Try::Tiny;
 
 use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_PROCEDURE_DEBUG} || 0;
+
+use Moo;
+with 'JSON::RPC::Spec::Common';
 
 has router => (
     is       => 'ro',
@@ -16,14 +18,6 @@ has router => (
         $self->can('match') or Carp::croak('method match required.');
     },
 );
-has jsonrpc => (
-    is      => 'ro',
-    default => '2.0',
-);
-has id              => (is => 'rw');
-has is_notification => (is => 'rw');
-
-with 'JSON::RPC::Spec::Common';
 
 sub parse {
     my ($self, $obj) = @_;
@@ -79,9 +73,9 @@ sub trigger {
 
     # rpc call of non-existent method:
     unless ($matched) {
-        Carp::confess 'rpc_method_not_found';
+        Carp::croak 'rpc_method_not_found on trigger';
     }
-    my $cb = delete $matched->{$self->callback_key};
+    my $cb = delete $matched->{$self->_callback_key};
     return $cb->($params, $matched);
 }
 
@@ -123,15 +117,25 @@ JSON::RPC::Spec::Procedure - Subclass of JSON::RPC::Spec
 
 =head1 DESCRIPTION
 
-JSON::RPC::Spec is Subclass of JSON::RPC::Spec.
+JSON::RPC::Spec::Procedure is Subclass of JSON::RPC::Spec.
 
 =head1 FUNCTIONS
 
 =head2 new
 
+constructor. `router` required.
+
 =head2 parse
 
+procedure parse.
+
 =head2 trigger
+
+callback trigger.
+
+=head2 router
+
+similar Router::Simple.
 
 =head1 LICENSE
 

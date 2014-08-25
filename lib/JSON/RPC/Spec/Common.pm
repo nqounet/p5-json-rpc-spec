@@ -3,14 +3,29 @@ use strict;
 use warnings;
 use Carp ();
 
+use JSON::MaybeXS qw(JSON);
+
 use Moo::Role;
 
-requires qw(jsonrpc id is_notification);
-
-has callback_key => (
+has coder => (
+    is      => 'ro',
+    default => sub { JSON->new->utf8 },
+    isa     => sub {
+        my $self = shift;
+        $self->can('encode') or Carp::croak('method encode required.');
+        $self->can('decode') or Carp::croak('method decode required.');
+    },
+);
+has _callback_key => (
     is      => 'ro',
     default => '.callback'
 );
+has jsonrpc => (
+    is      => 'ro',
+    default => '2.0'
+);
+has id              => (is => 'rw');
+has is_notification => (is => 'rw');
 
 sub _error {
     my ($self, $error) = @_;
@@ -71,3 +86,32 @@ sub _rpc_parse_error {
 }
 
 1;
+__END__
+
+=encoding utf-8
+
+=head1 NAME
+
+JSON::RPC::Spec::Common - common class of JSON::RPC::Spec
+
+=head1 FUNCTIONS
+
+=head2 coder
+
+=head2 id
+
+=head2 is_notification
+
+=head2 jsonrpc
+
+=head1 LICENSE
+
+Copyright (C) nqounet.
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
+=head1 AUTHOR
+
+nqounet E<lt>mail@nqou.netE<gt>
+
+=cut

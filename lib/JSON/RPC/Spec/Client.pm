@@ -3,15 +3,8 @@ use strict;
 use warnings;
 use Carp ();
 
-use Class::Accessor::Lite rw => [qw(jsonrpc)];
-
-sub new {
-    my $class = shift;
-    my $args  = @_ == 1 ? $_[0] : +{@_};
-    my $self  = bless $args, $class;
-    $self->jsonrpc('2.0');
-    return $self;
-}
+use Moo;
+with 'JSON::RPC::Spec::Common';
 
 sub compose {
     my ($self, $method, $params, $id) = @_;
@@ -19,7 +12,7 @@ sub compose {
     if (defined $id) {
         @args = (id => $id);
     }
-    return $self->{coder}->encode(
+    return $self->coder->encode(
         {
             jsonrpc => $self->jsonrpc,
             method  => $method,
@@ -30,3 +23,35 @@ sub compose {
 }
 
 1;
+__END__
+
+=encoding utf-8
+
+=head1 NAME
+
+JSON::RPC::Spec::Client - Yet another JSON-RPC 2.0 Client Implementation
+
+=head1 FUNCTIONS
+
+=head2 compose
+
+    use JSON::RPC::Spec::Client;
+    my $rpc_client = JSON::RPC::Spec::Client->new;
+    my $json_string = $rpc_client->compose('echo' => 'Hello', 1);
+
+    # for notification
+    my $json_string = $rpc_client->compose('echo' => 'Hello');
+
+compose JSON.
+
+=head1 LICENSE
+
+Copyright (C) nqounet.
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
+=head1 AUTHOR
+
+nqounet E<lt>mail@nqou.netE<gt>
+
+=cut
