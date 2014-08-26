@@ -2,6 +2,11 @@ Revision history for Perl extension JSON-RPC-Spec
 
 {{$NEXT}}
 
+v1.0.0 2014-08-26T12:50:12Z
+
+    - from Class::Accessor::Lite to Moo
+    - add method `compose`
+
 0.03 2014-08-17T14:33:56Z
 
     - from JSON::XS to JSON::MaybeXS
