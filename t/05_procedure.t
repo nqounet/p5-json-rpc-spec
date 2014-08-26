@@ -51,7 +51,7 @@ subtest 'parse' => sub {
 
 subtest 'trigger' => sub {
     my $params = 'Hello, trigger!';
-    my $res = $proc->trigger('echo', $params);
+    my $res = $proc->_trigger('echo', $params);
     is $res, $params, 'trigger' or diag explain $res;
 };
 

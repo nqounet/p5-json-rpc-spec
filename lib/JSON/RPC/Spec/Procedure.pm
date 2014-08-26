@@ -5,10 +5,10 @@ use Carp ();
 
 use Try::Tiny;
 
-use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
-
 use Moo;
 with 'JSON::RPC::Spec::Common';
+
+use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
 
 has router => (
     is       => 'ro',
@@ -24,8 +24,8 @@ sub parse {
     if (ref $obj ne 'HASH') {
         return $self->_rpc_invalid_request;
     }
-    $self->is_notification(!exists $obj->{id});
-    $self->id($obj->{id});
+    $self->_is_notification(!exists $obj->{id});
+    $self->_id($obj->{id});
     my $method = $obj->{method} || '';
 
     # rpc call with invalid Request object:
@@ -36,13 +36,13 @@ sub parse {
     }
     my ($result, $err);
     try {
-        $result = $self->trigger($method, $obj->{params});
+        $result = $self->_trigger($method, $obj->{params});
     }
     catch {
         $err = $_;
         warn qq{-- error : @{[$err]} } if DEBUG;
     };
-    if ($self->is_notification) {
+    if ($self->_is_notification) {
         return;
     }
     if ($err) {
@@ -59,14 +59,14 @@ sub parse {
         return $error;
     }
     return +{
-        jsonrpc => $self->jsonrpc,
+        jsonrpc => $self->_jsonrpc,
         result  => $result,
-        id      => $self->id
+        id      => $self->_id
     };
 }
 
 # trigger registered method
-sub trigger {
+sub _trigger {
     my ($self, $name, $params) = @_;
     my $router  = $self->router;
     my $matched = $router->match($name);
@@ -127,11 +127,7 @@ constructor. `router` required.
 
 =head2 parse
 
-procedure parse.
-
-=head2 trigger
-
-callback trigger.
+parse procedure.
 
 =head2 router
 

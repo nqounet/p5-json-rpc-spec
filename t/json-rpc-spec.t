@@ -15,11 +15,10 @@ my $obj;
 subtest 'standard' => sub {
     is(exception { $obj = JSON::RPC::Spec->new }, undef, 'new')
       or diag explain $obj;
-
     like ref $obj->coder, qr/JSON/, 'coder like JSON' or diag explain $obj;
-    isa_ok $obj->router,    'Router::Simple'             or diag explain $obj;
-    isa_ok $obj->procedure, 'JSON::RPC::Spec::Procedure' or diag explain $obj;
-    is $obj->jsonrpc, '2.0', 'jsonrpc' or diag explain $obj;
+    isa_ok $obj->router,     'Router::Simple'             or diag explain $obj;
+    isa_ok $obj->_procedure, 'JSON::RPC::Spec::Procedure' or diag explain $obj;
+    is $obj->_jsonrpc, '2.0', '_jsonrpc default' or diag explain $obj;
 };
 
 subtest 'coder change' => sub {
@@ -30,13 +29,17 @@ subtest 'coder change' => sub {
     ) or diag explain $obj;
 
     like(
-        exception { $obj = JSON::RPC::Spec->new(coder => t::Fake::Decode->new) },
+        exception {
+            $obj = JSON::RPC::Spec->new(coder => t::Fake::Decode->new)
+        },
         qr/\Qmethod encode required\E/,
         'coder has decode only'
     ) or diag explain $obj;
 
     like(
-        exception { $obj = JSON::RPC::Spec->new(coder => t::Fake::Encode->new) },
+        exception {
+            $obj = JSON::RPC::Spec->new(coder => t::Fake::Encode->new)
+        },
         qr/\Qmethod decode required\E/,
         'coder has encode only'
     ) or diag explain $obj;
@@ -56,7 +59,9 @@ subtest 'router change' => sub {
     ) or diag explain $obj;
 
     is(
-        exception { $obj = JSON::RPC::Spec->new(router => t::Fake::Match->new) },
+        exception {
+            $obj = JSON::RPC::Spec->new(router => t::Fake::Match->new)
+        },
         undef,
         'router has match'
     ) or diag explain $obj;

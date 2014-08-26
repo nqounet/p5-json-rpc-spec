@@ -30,9 +30,9 @@ JSON format string execute registerd method
 
 ## new
 
-    my $rpc = JSON::RPC::Spec->new;
+constructor.
 
-create instance
+options ["coder" in JSON::RPC::Spec::Common](https://metacpan.org/pod/JSON::RPC::Spec::Common#coder) and ["router"](#router) are available.
 
 ## register
 
@@ -67,10 +67,11 @@ parse JSON and triggered method. returns HASH.
 
 ## compose
 
-    my $json_string = $rpc->compose(max => [9,4,11,0], 1);
-    # returns JSON encoded string -> {"id":1,"jsonrpc":"2.0","method":"max","params":[9,4,11,0]}
+See ["compose" in JSON::RPC::Spec::Client](https://metacpan.org/pod/JSON::RPC::Spec::Client#compose) for full documentation.
 
-parse JSON and triggered method. returns JSON encoded string.
+## router
+
+similar [Router::Simple](https://metacpan.org/pod/Router::Simple).
 
 # DEBUGGING
 

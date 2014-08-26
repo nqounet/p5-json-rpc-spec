@@ -6,8 +6,6 @@ use Carp ();
 use Moo;
 with 'JSON::RPC::Spec::Common';
 
-use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
-
 sub compose {
     my ($self, $method, $params, $id) = @_;
     my @args;
@@ -16,7 +14,7 @@ sub compose {
     }
     return $self->coder->encode(
         +{
-            jsonrpc => $self->jsonrpc,
+            jsonrpc => $self->_jsonrpc,
             method  => $method,
             params  => $params,
             @args
