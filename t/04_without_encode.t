@@ -1,19 +1,17 @@
 use strict;
 use Test::More 0.98;
+use Test::Fatal;
 
 use JSON::RPC::Spec;
-use JSON::MaybeXS;
+use JSON::MaybeXS qw(JSON);
 
-my $rpc   = new_ok 'JSON::RPC::Spec';
+my $rpc;
+is(exception { $rpc = JSON::RPC::Spec->new }, undef, 'new')
+  or diag explain $rpc;
+
 my $coder = JSON->new->utf8;
-
-subtest 'register' => sub {
-    my $register = $rpc->register(echo => sub { $_[0] });
-    ok $register, 'method register';
-    is ref $register, 'JSON::RPC::Spec', 'instance of `JSON::RPC::Spec`'
-      or diag explain $register;
-    $rpc->register(emit_error => sub { die $_[0] });
-};
+$rpc->register(echo       => sub { $_[0] });
+$rpc->register(emit_error => sub { die $_[0] });
 
 subtest 'parse' => sub {
     for my $content ('Hello', [1, 2], {foo => 'bar'}) {
@@ -26,8 +24,9 @@ subtest 'parse' => sub {
                 params  => $content
             }
         );
-        my $res = $rpc->parse_without_encode($json_string);
-        ok $res, 'parse_without_encode ok' or diag explain $json_string;
+        my $res;
+is(exception { $res = $rpc->parse_without_encode($json_string)}, undef, 'parse_without_encode')
+  or diag explain $res;
         is_deeply $res,
           {
             jsonrpc => '2.0',
@@ -41,13 +40,10 @@ subtest 'parse' => sub {
 
 subtest 'register error' => sub {
     my $register;
-    eval { $register = $rpc->register };
-    ok $@, 'register requires params';
-    like $@, qr/pattern required/ or diag explain $@;
-
-    eval { $register = $rpc->register('pattern') };
-    ok $@, 'register requires code reference';
-    like $@, qr/code required/ or diag explain $@;
+like(exception { $register = $rpc->register}, qr/pattern required/, 'register requires params')
+  or diag explain $register;
+like(exception { $register = $rpc->register('pattern') }, qr/code required/, 'register requires code reference')
+  or diag explain $register;
 };
 
 subtest 'parse error' => sub {
@@ -143,15 +139,19 @@ subtest 'parse error' => sub {
         '[{"jsonrpc":"2.0","method":"emit_error"}]');
     ok !$res, 'Internal error -> notification';
 
-    $res = $rpc->parse_without_encode(
-        '[{"jsonrpc":"2.0","method":"emit_error","params":"rpc_invalid_params","id":1}]');
+    $res
+      = $rpc->parse_without_encode(
+        '[{"jsonrpc":"2.0","method":"emit_error","params":"rpc_invalid_params","id":1}]'
+      );
     is ref $res, 'ARRAY';
     is ref $res->[0], 'HASH';
     ok exists $res->[0]{error};
     is $res->[0]{error}{message}, 'Invalid params', 'Invalid params';
 
-    $res = $rpc->parse_without_encode(
-        '[{"jsonrpc":"2.0","method":"emit_error","params":"rpc_invalid_params"}]');
+    $res
+      = $rpc->parse_without_encode(
+        '[{"jsonrpc":"2.0","method":"emit_error","params":"rpc_invalid_params"}]'
+      );
     ok !$res, 'Invalid params -> notification';
 };
 

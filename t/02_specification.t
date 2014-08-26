@@ -1,25 +1,36 @@
 use strict;
 use Test::More 0.98;
+use Test::Fatal;
 
 use JSON::RPC::Spec;
-use JSON::MaybeXS;
+use JSON::MaybeXS qw(JSON);
 
 # JSON-RPC 2.0 Specification
 # http://www.jsonrpc.org/specification#examples
 my $coder = JSON->new->utf8;
-my $rpc = JSON::RPC::Spec->new({coder => $coder});
+
+my $rpc;
+is(exception { $rpc = JSON::RPC::Spec->new({coder => $coder}) },
+    undef, 'args in HASH')
+  or diag explain $rpc;
 isa_ok $rpc, 'JSON::RPC::Spec';
 
-$rpc->register(
-    sum => sub {
-        my ($params) = @_;
-        my $sum = 0;
-        for my $num (@{$params}) {
-            $sum += $num;
-        }
-        return $sum;
-    }
-);
+is(
+    exception {
+        $rpc->register(
+            sum => sub {
+                my ($params) = @_;
+                my $sum = 0;
+                for my $num (@{$params}) {
+                    $sum += $num;
+                }
+                return $sum;
+            }
+          )
+    },
+    undef,
+    'register code refs'
+) or diag explain $rpc;
 
 sub subtract {
     my ($params) = @_;
@@ -29,7 +40,9 @@ sub subtract {
     return $params->[0] - $params->[1];
 }
 
-$rpc->register(subtract => \&subtract);
+is(exception { $rpc->register(subtract => \&subtract) },
+    undef, 'register sub refs')
+  or diag explain $rpc;
 
 $rpc->register(update       => sub {1});
 $rpc->register(get_data     => sub { ['hello', 5] });

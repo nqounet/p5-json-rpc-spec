@@ -3,21 +3,40 @@ use strict;
 use warnings;
 use Carp ();
 
+use JSON::MaybeXS qw(JSON);
+
 use Moo::Role;
 
-requires qw(jsonrpc id is_notification);
+has coder => (
+    is      => 'ro',
+    default => sub { JSON->new->utf8 },
+    isa     => sub {
+        my $self = shift;
+        $self->can('encode') or Carp::croak('method encode required.');
+        $self->can('decode') or Carp::croak('method decode required.');
+    },
+);
 
-has callback_key => (
+has _callback_key => (
     is      => 'ro',
     default => '.callback'
 );
 
+has _jsonrpc => (
+    is      => 'ro',
+    default => '2.0'
+);
+
+has _id              => (is => 'rw');
+
+has _is_notification => (is => 'rw');
+
 sub _error {
     my ($self, $error) = @_;
     return +{
-        jsonrpc => $self->jsonrpc,
+        jsonrpc => $self->_jsonrpc,
         error   => $error,
-        id      => $self->id
+        id      => $self->_id
     };
 }
 
@@ -27,8 +46,8 @@ sub _rpc_invalid_request {
         code    => -32600,
         message => 'Invalid Request'
     };
-    $self->is_notification(undef);
-    $self->id(undef);
+    $self->_is_notification(undef);
+    $self->_id(undef);
     return $self->_error($error);
 }
 
@@ -66,8 +85,33 @@ sub _rpc_parse_error {
         code    => -32700,
         message => 'Parse error'
     };
-    $self->id(undef);
+    $self->_id(undef);
     return $self->_error($error);
 }
 
 1;
+__END__
+
+=encoding utf-8
+
+=head1 NAME
+
+JSON::RPC::Spec::Common - common class of JSON::RPC::Spec
+
+=head1 FUNCTIONS
+
+=head2 coder
+
+JSON Encoder/Decoder. similar L<< JSON >>.
+
+=head1 LICENSE
+
+Copyright (C) nqounet.
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
+=head1 AUTHOR
+
+nqounet E<lt>mail@nqou.netE<gt>
+
+=cut

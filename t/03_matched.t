@@ -1,16 +1,26 @@
 use strict;
 use Test::More 0.98;
+use Test::Fatal;
 
 use JSON::RPC::Spec;
-use JSON::MaybeXS;
+use JSON::MaybeXS qw(JSON);
 use Router::Simple;
 
 my $coder  = JSON->new->utf8;
 my $router = Router::Simple->new;
-my $rpc    = JSON::RPC::Spec->new(
-    coder  => $coder,
-    router => $router
-);
+
+my $rpc;
+
+is(
+    exception {
+        $rpc = JSON::RPC::Spec->new(
+            coder  => $coder,
+            router => $router
+          )
+    },
+    undef,
+    'args in array'
+) or diag explain $rpc;
 isa_ok $rpc, 'JSON::RPC::Spec';
 
 $rpc->register(

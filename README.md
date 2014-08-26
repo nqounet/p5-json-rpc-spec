@@ -9,10 +9,16 @@ JSON::RPC::Spec - Yet another JSON-RPC 2.0 Implementation
     use JSON::RPC::Spec;
 
     my $rpc = JSON::RPC::Spec->new;
+
+    # server
     $rpc->register(echo => sub { $_[0] });
     print $rpc->parse(
         '{"jsonrpc": "2.0", "method": "echo", "params": "Hello, World!", "id": 1}'
     );    # -> {"jsonrpc":"2.0","result":"Hello, World!","id":1}
+
+    # client
+    print $rpc->compose(echo => 'Hello, World!', 1);
+      # -> {"jsonrpc":"2.0","method":"echo","params":"Hello, World!","id":1}
 
 # DESCRIPTION
 
@@ -24,9 +30,9 @@ JSON format string execute registerd method
 
 ## new
 
-    my $rpc = JSON::RPC::Spec->new;
+constructor.
 
-create instance
+options ["coder" in JSON::RPC::Spec::Common](https://metacpan.org/pod/JSON::RPC::Spec::Common#coder) and ["router"](#router) are available.
 
 ## register
 
@@ -58,6 +64,14 @@ parse JSON and triggered method. returns JSON encoded string.
     );    # returns hash -> {id => 1, result => 11, jsonrpc => '2.0'}
 
 parse JSON and triggered method. returns HASH.
+
+## compose
+
+See ["compose" in JSON::RPC::Spec::Client](https://metacpan.org/pod/JSON::RPC::Spec::Client#compose) for full documentation.
+
+## router
+
+similar [Router::Simple](https://metacpan.org/pod/Router::Simple).
 
 # DEBUGGING
 

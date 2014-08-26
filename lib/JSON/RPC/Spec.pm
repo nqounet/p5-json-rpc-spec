@@ -3,26 +3,18 @@ use strict;
 use warnings;
 use Carp ();
 
-our $VERSION = "0.03";
+use version; our $VERSION = version->declare("v1.0.0");
 
-use JSON::MaybeXS qw(JSON);
-use Router::Simple;
 use Try::Tiny;
+use Router::Simple;
 use JSON::RPC::Spec::Procedure;
+use JSON::RPC::Spec::Client;
+
+use Moo;
+with 'JSON::RPC::Spec::Common';
 
 use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
 
-use Moo;
-
-has coder => (
-    is      => 'ro',
-    default => sub { JSON->new->utf8 },
-    isa     => sub {
-        my $self = shift;
-        $self->can('encode') or Carp::croak('method encode required.');
-        $self->can('decode') or Carp::croak('method decode required.');
-    },
-);
 has router => (
     is      => 'ro',
     default => sub { Router::Simple->new },
@@ -31,28 +23,29 @@ has router => (
         $self->can('match') or Carp::croak('method match required.');
     },
 );
-has procedure => (
+
+has _procedure => (
     is   => 'ro',
     lazy => 1,
     default =>
       sub { JSON::RPC::Spec::Procedure->new(router => shift->router) },
 );
-has jsonrpc => (
-    is      => 'ro',
-    default => '2.0',
-);
-has id              => (is => 'rw');
-has is_batch        => (is => 'rw');
-has is_notification => (is => 'rw');
-has content         => (is => 'rw');
 
-with 'JSON::RPC::Spec::Common';
+has _client => (
+    is      => 'ro',
+    default => sub { JSON::RPC::Spec::Client->new },
+    handles => [qw(compose)],
+);
+
+has _is_batch => (is => 'rw');
+
+has _content => (is => 'rw');
 
 sub _parse_json {
     my ($self) = @_;
-    warn qq{-- start parsing @{[$self->content]}\n} if DEBUG;
+    warn qq{-- start parsing @{[$self->_content]}\n} if DEBUG;
 
-    unless (length $self->content) {
+    unless (length $self->_content) {
         return $self->_rpc_invalid_request;
     }
 
@@ -61,7 +54,7 @@ sub _parse_json {
     # rpc call Batch, invalid JSON:
     my ($req, $err);
     try {
-        $req = $self->coder->decode($self->content);
+        $req = $self->coder->decode($self->_content);
     }
     catch {
         $err = $_;
@@ -73,10 +66,10 @@ sub _parse_json {
 
     # Batch mode flag
     if (ref $req eq 'ARRAY') {
-        $self->is_batch(1);
+        $self->_is_batch(1);
     }
     else {
-        $self->is_batch(0);
+        $self->_is_batch(0);
         $req = [$req];
     }
 
@@ -88,33 +81,27 @@ sub _parse_json {
     # procedure call and create response
     my @response;
     for my $obj (@{$req}) {
-        my $res = $self->procedure->parse($obj);
+        my $res = $self->_procedure->parse($obj);
 
         # notification is ignore
         push @response, $res if $res;
     }
-    if (@response) {
-        if ($self->is_batch) {
-            return [@response];
-        }
-        else {
-            return $response[0];
-        }
-    }
-    return;
+    return unless @response;
+    return [@response] if $self->_is_batch;
+    return $response[0];
 }
 
 # parse JSON string to hash
 sub parse_without_encode {
     my ($self, $json_string) = @_;
-    $self->content($json_string);
+    $self->_content($json_string);
     return $self->_parse_json;
 }
 
 # parse JSON string to JSON string
 sub parse {
     my ($self, $json_string) = @_;
-    $self->content($json_string);
+    $self->_content($json_string);
     my $result = $self->_parse_json;
     return unless $result;
     return $self->coder->encode($result);
@@ -129,10 +116,9 @@ sub register {
     if (ref $cb ne 'CODE') {
         Carp::croak('code required');
     }
-    $self->router->connect($pattern, {$self->callback_key => $cb}, {});
+    $self->router->connect($pattern, {$self->_callback_key => $cb}, {});
     return $self;
 }
-
 
 1;
 __END__
@@ -149,10 +135,16 @@ JSON::RPC::Spec - Yet another JSON-RPC 2.0 Implementation
     use JSON::RPC::Spec;
 
     my $rpc = JSON::RPC::Spec->new;
+
+    # server
     $rpc->register(echo => sub { $_[0] });
     print $rpc->parse(
         '{"jsonrpc": "2.0", "method": "echo", "params": "Hello, World!", "id": 1}'
     );    # -> {"jsonrpc":"2.0","result":"Hello, World!","id":1}
+
+    # client
+    print $rpc->compose(echo => 'Hello, World!', 1);
+      # -> {"jsonrpc":"2.0","method":"echo","params":"Hello, World!","id":1}
 
 =head1 DESCRIPTION
 
@@ -164,9 +156,9 @@ JSON format string execute registerd method
 
 =head2 new
 
-    my $rpc = JSON::RPC::Spec->new;
+constructor.
 
-create instance
+options L<< JSON::RPC::Spec::Common/coder >> and L<< /router >> are available.
 
 =head2 register
 
@@ -199,11 +191,19 @@ parse JSON and triggered method. returns JSON encoded string.
 
 parse JSON and triggered method. returns HASH.
 
+=head2 compose
+
+See L<< JSON::RPC::Spec::Client/compose >> for full documentation.
+
+=head2 router
+
+similar L<< Router::Simple >>.
+
 =head1 DEBUGGING
 
 You can set the C<PERL_JSON_RPC_SPEC_DEBUG> environment variable to get some advanced diagnostics information printed to C<STDERR>.
 
-    PERL_JSON_RPC_SPEC_DEBUG=1
+    PERL_JSON_RPC_SPEC_DEBUG = 1
 
 =head1 SEE ALSO
 
