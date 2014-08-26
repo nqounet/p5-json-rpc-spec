@@ -5,7 +5,7 @@ use Carp ();
 
 use Try::Tiny;
 
-use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_PROCEDURE_DEBUG} || 0;
+use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
 
 use Moo;
 with 'JSON::RPC::Spec::Common';
@@ -135,7 +135,7 @@ callback trigger.
 
 =head2 router
 
-similar Router::Simple.
+similar L<< Router::Simple >>.
 
 =head1 LICENSE
 

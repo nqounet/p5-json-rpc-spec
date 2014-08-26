@@ -22,9 +22,9 @@ has client => (
 );
 
 has router => (
-    is       => 'ro',
+    is      => 'ro',
     default => sub { Router::Simple->new },
-    isa      => sub {
+    isa     => sub {
         my $self = shift;
         $self->can('match') or Carp::croak('method match required.');
     },
@@ -199,10 +199,7 @@ parse JSON and triggered method. returns HASH.
 
 =head2 compose
 
-    my $json_string = $rpc->compose(max => [9,4,11,0], 1);
-    # returns JSON encoded string -> {"id":1,"jsonrpc":"2.0","method":"max","params":[9,4,11,0]}
-
-parse JSON and triggered method. returns JSON encoded string.
+See L<< JSON::RPC::Spec::Client/compose >> for full documentation.
 
 =head1 DEBUGGING
 

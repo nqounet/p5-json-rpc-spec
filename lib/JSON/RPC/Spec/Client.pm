@@ -6,6 +6,8 @@ use Carp ();
 use Moo;
 with 'JSON::RPC::Spec::Common';
 
+use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
+
 sub compose {
     my ($self, $method, $params, $id) = @_;
     my @args;
@@ -13,7 +15,7 @@ sub compose {
         @args = (id => $id);
     }
     return $self->coder->encode(
-        {
+        +{
             jsonrpc => $self->jsonrpc,
             method  => $method,
             params  => $params,
@@ -42,7 +44,7 @@ JSON::RPC::Spec::Client - Yet another JSON-RPC 2.0 Client Implementation
     # for notification
     my $json_string = $rpc_client->compose('echo' => 'Hello');
 
-compose JSON.
+build a JSON encoded string of specifications of the JSON-RPC 2.0.
 
 =head1 LICENSE
 

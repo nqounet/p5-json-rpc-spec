@@ -7,6 +7,12 @@ use JSON::MaybeXS qw(JSON);
 
 use Moo::Role;
 
+use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
+
+has _callback_key => (
+    is      => 'ro',
+    default => '.callback'
+);
 has coder => (
     is      => 'ro',
     default => sub { JSON->new->utf8 },
@@ -15,10 +21,6 @@ has coder => (
         $self->can('encode') or Carp::croak('method encode required.');
         $self->can('decode') or Carp::croak('method decode required.');
     },
-);
-has _callback_key => (
-    is      => 'ro',
-    default => '.callback'
 );
 has jsonrpc => (
     is      => 'ro',
@@ -98,11 +100,15 @@ JSON::RPC::Spec::Common - common class of JSON::RPC::Spec
 
 =head2 coder
 
+JSON Encoder/Decoder. similar L<< JSON >>.
+
+=head2 jsonrpc
+
+JSON-RPC version (2.0 is default)
+
 =head2 id
 
 =head2 is_notification
-
-=head2 jsonrpc
 
 =head1 LICENSE
 

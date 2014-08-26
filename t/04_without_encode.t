@@ -24,8 +24,9 @@ subtest 'parse' => sub {
                 params  => $content
             }
         );
-        my $res = $rpc->parse_without_encode($json_string);
-        ok $res, 'parse_without_encode ok' or diag explain $json_string;
+        my $res;
+is(exception { $res = $rpc->parse_without_encode($json_string)}, undef, 'parse_without_encode')
+  or diag explain $res;
         is_deeply $res,
           {
             jsonrpc => '2.0',
@@ -39,13 +40,10 @@ subtest 'parse' => sub {
 
 subtest 'register error' => sub {
     my $register;
-    eval { $register = $rpc->register };
-    ok $@, 'register requires params';
-    like $@, qr/pattern required/ or diag explain $@;
-
-    eval { $register = $rpc->register('pattern') };
-    ok $@, 'register requires code reference';
-    like $@, qr/code required/ or diag explain $@;
+like(exception { $register = $rpc->register}, qr/pattern required/, 'register requires params')
+  or diag explain $register;
+like(exception { $register = $rpc->register('pattern') }, qr/code required/, 'register requires code reference')
+  or diag explain $register;
 };
 
 subtest 'parse error' => sub {
