@@ -77,7 +77,7 @@ similar [Router::Simple](https://metacpan.org/pod/Router::Simple).
 
 You can set the `PERL_JSON_RPC_SPEC_DEBUG` environment variable to get some advanced diagnostics information printed to `STDERR`.
 
-    PERL_JSON_RPC_SPEC_DEBUG=1
+    PERL_JSON_RPC_SPEC_DEBUG = 1
 
 # SEE ALSO
 
