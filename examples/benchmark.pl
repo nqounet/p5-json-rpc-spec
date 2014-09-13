@@ -50,3 +50,6 @@ rpc:  3 wallclock secs ( 3.19 usr +  0.00 sys =  3.19 CPU) @ 4669.59/s (n=14896)
 v0.03
 rpc:  3 wallclock secs ( 3.05 usr +  0.00 sys =  3.05 CPU) @ 4505.57/s (n=13742)
 
+v1.0.0
+rpc:  4 wallclock secs ( 3.29 usr +  0.00 sys =  3.29 CPU) @ 3899.39/s (n=12829)
+
