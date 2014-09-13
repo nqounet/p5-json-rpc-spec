@@ -19,6 +19,8 @@ has router => (
     },
 );
 
+no Moo;
+
 sub parse {
     my ($self, $obj) = @_;
     if (ref $obj ne 'HASH') {

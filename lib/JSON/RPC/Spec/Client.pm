@@ -6,6 +6,8 @@ use Carp ();
 use Moo;
 with 'JSON::RPC::Spec::Common';
 
+no Moo;
+
 sub compose {
     my ($self, $method, $params, $id) = @_;
     my @args;

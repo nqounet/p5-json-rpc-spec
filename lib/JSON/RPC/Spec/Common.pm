@@ -31,6 +31,8 @@ has _id              => (is => 'rw');
 
 has _is_notification => (is => 'rw');
 
+no Moo;
+
 sub _error {
     my ($self, $error) = @_;
     return +{
