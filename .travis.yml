@@ -4,4 +4,8 @@ perl:
   - "5.14"
   - "5.16"
   - "5.18"
+  - "5.20"
 
+notifications:
+  webhooks:
+    - https://idobata.io/hook/travis_ci/5b5a1899-9c57-4107-9da6-3d22e6670998
