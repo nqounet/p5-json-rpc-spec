@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Carp ();
 
-use version; our $VERSION = version->declare("v1.0.0");
+use version; our $VERSION = version->declare("v1.0.1");
 
 use Try::Tiny;
 use Router::Simple;

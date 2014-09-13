@@ -2,6 +2,10 @@ Revision history for Perl extension JSON-RPC-Spec
 
 {{$NEXT}}
 
+v1.0.1 2014-09-13T13:46:31Z
+
+    - add code `no Moo;`
+
 v1.0.0 2014-08-26T12:50:12Z
 
     - from Class::Accessor::Lite to Moo

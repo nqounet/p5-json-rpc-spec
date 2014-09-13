@@ -24,7 +24,15 @@ JSON::RPC::Spec - Yet another JSON-RPC 2.0 Implementation
 
 JSON::RPC::Spec is Yet another JSON-RPC 2.0 Implementation.
 
-JSON format string execute registerd method
+JSON format string execute registered method.
+
+JSON::RPC - PSGI
+
+The tightly also supports BATCH.
+
+As a feature.
+1\. JSON string to JSON string.
+2\. Simple register callback.
 
 # FUNCTIONS
 
