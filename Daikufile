@@ -1,0 +1,19 @@
+desc 'install perl modules';
+task install => sub {
+};
+
+desc 'test coverage';
+task coverage => sub {
+    sh q{perl Build.pl};
+    sh q{./Build build};
+    sh q{cover -test};
+    sh q{open cover_db/coverage.html};
+};
+
+desc 'NYTProf';
+task profile => sub {
+    sh q{PERL5OPT=-d:NYTProf prove -lr t};
+    sh q{nytprofhtml --open};
+};
+
+task default => sub { sh q{daiku -T} };
