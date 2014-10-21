@@ -12,7 +12,7 @@ task coverage => sub {
 
 desc 'NYTProf';
 task profile => sub {
-    sh q{PERL5OPT=-d:NYTProf prove -lr t};
+    sh q{PERL5OPT=-d:NYTProf perl -Ilib t/02_specification.t};
     sh q{nytprofhtml --open};
 };
 
