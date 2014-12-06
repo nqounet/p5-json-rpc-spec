@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/nqounet/p5-json-rpc-spec.png?branch=master)](https://travis-ci.org/nqounet/p5-json-rpc-spec)
+[![Build Status](https://travis-ci.org/nqounet/p5-json-rpc-spec.svg?branch=master)](https://travis-ci.org/nqounet/p5-json-rpc-spec)
 # NAME
 
 JSON::RPC::Spec - Yet another JSON-RPC 2.0 Implementation

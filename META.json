@@ -4,7 +4,7 @@
       "nqounet <mail@nqou.net>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v2.1.1, CPAN::Meta::Converter version 2.142060",
+   "generated_by" : "Minilla/v2.2.1, CPAN::Meta::Converter version 2.143240",
    "license" : [
       "perl_5"
    ],
@@ -28,7 +28,8 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "Module::Build::Tiny" : "0.035"
+            "Module::Build::Tiny" : "0.035",
+            "perl" : "5.008_001"
          }
       },
       "develop" : {
@@ -47,13 +48,15 @@
          "requires" : {
             "JSON::MaybeXS" : "0",
             "Moo" : "0",
+            "Moo::Role" : "0",
             "Router::Simple" : "0",
             "Try::Tiny" : "0",
-            "perl" : "5.008001"
+            "version" : "0"
          }
       },
       "test" : {
          "requires" : {
+            "Test::Fatal" : "0",
             "Test::More" : "0.98"
          }
       }
@@ -65,7 +68,8 @@
       },
       "homepage" : "https://github.com/nqounet/p5-json-rpc-spec",
       "repository" : {
-         "url" : "https://github.com/nqounet/p5-json-rpc-spec.git",
+         "type" : "git",
+         "url" : "git://github.com/nqounet/p5-json-rpc-spec.git",
          "web" : "https://github.com/nqounet/p5-json-rpc-spec"
       }
    },

@@ -1,5 +1,10 @@
+use lib 'lib';
+use Path::Tiny qw(path);
+use Capture::Tiny qw(capture_stdout);
+
 desc 'install perl modules';
 task install => sub {
+    sh q(cpanm --with-all-features --installdeps .);
 };
 
 desc 'test coverage';
@@ -14,6 +19,16 @@ desc 'NYTProf';
 task profile => sub {
     sh q{PERL5OPT=-d:NYTProf perl -Ilib t/02_specification.t};
     sh q{nytprofhtml --open};
+};
+
+namespace generate => sub {
+    desc 'generate cpanfile';
+    task cpanfile => sub {
+        my $stdout = capture_stdout sub {
+            sh q(scan-prereqs-cpanfile --ignore=public,templates,var);
+        };
+        path('cpanfile')->spew($stdout);
+    };
 };
 
 task default => sub { sh q{daiku -T} };

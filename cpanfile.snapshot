@@ -96,16 +96,18 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  JSON-MaybeXS-1.002002
-    pathname: E/ET/ETHER/JSON-MaybeXS-1.002002.tar.gz
+  JSON-MaybeXS-1.003003
+    pathname: E/ET/ETHER/JSON-MaybeXS-1.003003.tar.gz
     provides:
-      JSON::MaybeXS 1.002002
+      JSON::MaybeXS 1.003003
     requirements:
+      Carp 0
       ExtUtils::CBuilder 0.27
       ExtUtils::MakeMaker 0
       File::Spec 0
       File::Temp 0
       JSON::PP 2.27202
+      Scalar::Util 0
       perl 5.006
   Lexical-SealRequireHints-0.007
     pathname: Z/ZE/ZEFRAM/Lexical-SealRequireHints-0.007.tar.gz
@@ -117,10 +119,10 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  Module-Build-Tiny-0.037
-    pathname: L/LE/LEONT/Module-Build-Tiny-0.037.tar.gz
+  Module-Build-Tiny-0.039
+    pathname: L/LE/LEONT/Module-Build-Tiny-0.039.tar.gz
     provides:
-      Module::Build::Tiny 0.037
+      Module::Build::Tiny 0.039
     requirements:
       CPAN::Meta 0
       DynaLoader 0
@@ -152,57 +154,55 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  Moo-1.006000
-    pathname: H/HA/HAARG/Moo-1.006000.tar.gz
+  Moo-1.006001
+    pathname: H/HA/HAARG/Moo-1.006001.tar.gz
     provides:
       Method::Generate::Accessor undef
       Method::Generate::BuildAll undef
       Method::Generate::Constructor undef
       Method::Generate::DemolishAll undef
       Method::Inliner undef
-      Moo 1.006000
+      Moo 1.006001
       Moo::HandleMoose undef
       Moo::HandleMoose::FakeConstructor undef
       Moo::HandleMoose::FakeMetaClass undef
       Moo::HandleMoose::_TypeMap undef
       Moo::Object undef
-      Moo::Role 1.006000
+      Moo::Role 1.006001
       Moo::_Utils undef
       Moo::_mro undef
       Moo::sification undef
-      Sub::Defer 1.006000
-      Sub::Quote 1.006000
+      Sub::Defer 1.006001
+      Sub::Quote 1.006001
       oo undef
     requirements:
       Class::Method::Modifiers 1.1
       Devel::GlobalDestruction 0.11
+      Exporter 5.57
       ExtUtils::MakeMaker 0
       Import::Into 1.002
       Module::Runtime 0.014
-      Role::Tiny 1.003003
+      Role::Tiny 1.003004
       Scalar::Util 0
       perl 5.006
       strictures 1.004003
-  Role-Tiny-1.003003
-    pathname: H/HA/HAARG/Role-Tiny-1.003003.tar.gz
+  Role-Tiny-1.003004
+    pathname: H/HA/HAARG/Role-Tiny-1.003004.tar.gz
     provides:
-      Role::Tiny 1.003003
-      Role::Tiny::With 1.003003
+      Role::Tiny 1.003004
+      Role::Tiny::With 1.003004
     requirements:
       Exporter 5.57
       perl 5.006
-  Router-Simple-0.15
-    pathname: T/TO/TOKUHIROM/Router-Simple-0.15.tar.gz
+  Router-Simple-0.17
+    pathname: T/TO/TOKUHIROM/Router-Simple-0.17.tar.gz
     provides:
-      Router::Simple 0.15
+      Router::Simple 0.17
       Router::Simple::Declare undef
       Router::Simple::Route undef
       Router::Simple::SubMapper undef
     requirements:
-      CPAN::Meta 0
-      CPAN::Meta::Prereqs 0
       Class::Accessor::Lite 0.05
-      ExtUtils::CBuilder 0
       List::Util 0
       Module::Build 0.38
       Scalar::Util 0
@@ -215,6 +215,18 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0.88
+  Test-Fatal-0.013
+    pathname: R/RJ/RJBS/Test-Fatal-0.013.tar.gz
+    provides:
+      Test::Fatal 0.013
+    requirements:
+      Carp 0
+      Exporter 5.57
+      ExtUtils::MakeMaker 6.30
+      Test::Builder 0
+      Try::Tiny 0.07
+      strict 0
+      warnings 0
   Test-Harness-3.32
     pathname: L/LE/LEONT/Test-Harness-3.32.tar.gz
     provides:
