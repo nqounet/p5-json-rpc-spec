@@ -6,14 +6,15 @@ use Router::Simple;
 use JSON::RPC::Spec::Procedure;
 
 my $router = Router::Simple->new;
+my $callback_key = 'cb';
 $router->connect(
     echo => {
-        '.callback' => sub { $_[0] }
+        $callback_key => sub { $_[0] }
     }
 );
 
 my $proc;
-is(exception { $proc = JSON::RPC::Spec::Procedure->new(router => $router) },
+is(exception { $proc = JSON::RPC::Spec::Procedure->new(router => $router, _callback_key => $callback_key) },
     undef, 'new')
   or diag explain $proc;
 isa_ok $proc, 'JSON::RPC::Spec::Procedure';
@@ -22,7 +23,7 @@ subtest 'new hashref' => sub {
     is(
         exception {
             $proc
-              = JSON::RPC::Spec::Procedure->new({router => $router})
+              = JSON::RPC::Spec::Procedure->new({router => $router, _callback_key => $callback_key})
         },
         undef,
         'new'
