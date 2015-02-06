@@ -1,6 +1,9 @@
 use lib 'lib';
 use Path::Tiny qw(path);
 use Capture::Tiny qw(capture_stdout);
+use App::scan_prereqs_cpanfile;
+
+use DDP {deparse => 1};
 
 desc 'install perl modules';
 task install => sub {
@@ -13,6 +16,18 @@ task coverage => sub {
     sh q{./Build build};
     sh q{cover -test};
     sh q{open cover_db/coverage.html};
+};
+
+desc 'Perl::Tidy';
+task perltidy => sub {
+    for my $dir ('examples', 'lib', 't') {
+        my $iter = path($dir)->iterator({recurse => 1});
+        while (my $path = $iter->()) {
+            next if $path->is_dir;
+            next unless $path->stringify =~ m/\.(t|p[lm])\z/;
+            sh qq{perltidy $path};
+        }
+    }
 };
 
 desc 'NYTProf';
