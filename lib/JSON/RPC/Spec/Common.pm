@@ -19,7 +19,7 @@ has coder => (
 
 has _callback_key => (
     is      => 'ro',
-    default => '.callback'
+    default => '_callback'
 );
 
 has _jsonrpc => (
