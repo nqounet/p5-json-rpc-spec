@@ -33,7 +33,8 @@ subtest 'notification' => sub {
 
 subtest 'handles' => sub {
     my $obj = JSON::RPC::Spec->new;
-    is(exception{$obj->compose(echo => 'Hello')}, undef, 'handle compose') or diag explain $obj;
+    is(exception { $obj->compose(echo => 'Hello') }, undef, 'handle compose')
+      or diag explain $obj;
 };
 
 done_testing;

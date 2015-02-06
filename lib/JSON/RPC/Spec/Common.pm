@@ -27,7 +27,7 @@ has _jsonrpc => (
     default => '2.0'
 );
 
-has _id              => (is => 'rw');
+has _id => (is => 'rw');
 
 has _is_notification => (is => 'rw');
 

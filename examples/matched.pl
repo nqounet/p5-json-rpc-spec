@@ -39,7 +39,8 @@ say $rpc->parse(
 
 say $rpc->parse(
     '{"jsonrpc": "2.0", "method": "list.times", "params": [1,7,3,4,5], "id": 1}'
-);    # -> {"id":1,"jsonrpc":"2.0","error":{"message":"Internal error","data":"Can't locate object method \"jsonrpc_times\" via package \"MyApp::Calc\" at examples/matched.pl line 28.\n","code":-32603}}
+  )
+  ; # -> {"id":1,"jsonrpc":"2.0","error":{"message":"Internal error","data":"Can't locate object method \"jsonrpc_times\" via package \"MyApp::Calc\" at examples/matched.pl line 28.\n","code":-32603}}
 
 
 $rpc->register(

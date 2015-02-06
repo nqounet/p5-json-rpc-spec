@@ -1,5 +1,5 @@
 package t::Fake::Encode;
 use strict;
 use Moo;
-sub encode {}
+sub encode { }
 1;
