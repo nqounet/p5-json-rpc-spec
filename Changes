@@ -2,6 +2,12 @@ Revision history for Perl extension JSON-RPC-Spec
 
 {{$NEXT}}
 
+v1.0.2 2015-02-06T16:13:43Z
+
+    - change default value from `.callback` to `_callback`
+    - add tests
+    - add daiku perltidy
+
 v1.0.1 2014-09-13T13:46:31Z
 
     - add code `no Moo;`
