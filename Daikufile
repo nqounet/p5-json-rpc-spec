@@ -3,11 +3,9 @@ use Path::Tiny qw(path);
 use Capture::Tiny qw(capture_stdout);
 use App::scan_prereqs_cpanfile;
 
-use DDP {deparse => 1};
-
 desc 'install perl modules';
 task install => sub {
-    sh q(cpanm --with-all-features --installdeps .);
+    sh q(cpanm --with-recommends --with-develop --with-all-features --installdeps .);
 };
 
 desc 'test coverage';
@@ -26,6 +24,17 @@ task perltidy => sub {
             next if $path->is_dir;
             next unless $path->stringify =~ m/\.(t|p[lm])\z/;
             sh qq{perltidy $path};
+        }
+    }
+};
+
+desc 'remove *.bak';
+task clean => sub {
+    for my $dir ('examples', 'lib', 't') {
+        my $iter = path($dir)->iterator({recurse => 1});
+        while (my $path = $iter->()) {
+            next if $path->is_dir;
+            $path->remove if $path->stringify =~ m/\.bak\z/;
         }
     }
 };
