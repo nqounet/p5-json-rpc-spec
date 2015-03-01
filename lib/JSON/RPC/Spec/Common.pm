@@ -19,12 +19,12 @@ has coder => (
 
 has _callback_key => (
     is      => 'ro',
-    default => '_callback'
+    default => sub {'_callback'}
 );
 
 has _jsonrpc => (
     is      => 'ro',
-    default => '2.0'
+    default => sub {'2.0'}
 );
 
 has _id => (is => 'rw');
