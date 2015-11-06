@@ -2,13 +2,12 @@
 use utf8;
 use 5.012;
 use Benchmark qw(:all);
-use DDP {deparse => 1};
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use JSON::RPC::Spec;
 
-p $JSON::RPC::Spec::VERSION;
+warn $JSON::RPC::Spec::VERSION;
 
 my $run;
 my $times = 1;
@@ -52,4 +51,3 @@ rpc:  3 wallclock secs ( 3.05 usr +  0.00 sys =  3.05 CPU) @ 4505.57/s (n=13742)
 
 v1.0.0
 rpc:  4 wallclock secs ( 3.29 usr +  0.00 sys =  3.29 CPU) @ 3899.39/s (n=12829)
-
