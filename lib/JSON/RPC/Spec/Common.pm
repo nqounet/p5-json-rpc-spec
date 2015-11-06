@@ -1,37 +1,35 @@
 package JSON::RPC::Spec::Common;
-use strict;
-use warnings;
+use Moo::Role;
 use Carp ();
-
 use JSON::MaybeXS qw(JSON);
 
-use Moo::Role;
-
 has coder => (
-    is      => 'ro',
-    default => sub { JSON->new->utf8 },
-    isa     => sub {
+    is  => 'lazy',
+    isa => sub {
         my $self = shift;
         $self->can('encode') or Carp::croak('method encode required.');
         $self->can('decode') or Carp::croak('method decode required.');
     },
 );
 
-has _callback_key => (
-    is      => 'ro',
-    default => sub {'_callback'}
-);
+has [qw(_callback_key _jsonrpc)] => (is => 'lazy');
 
-has _jsonrpc => (
-    is      => 'ro',
-    default => sub {'2.0'}
-);
+has [qw(_id _is_notification)] => (is => 'rw');
 
-has _id => (is => 'rw');
+use namespace::clean;
 
-has _is_notification => (is => 'rw');
 
-no Moo;
+sub _build_coder {
+    JSON->new->utf8;
+}
+
+sub _build__callback_key {
+    '_callback';
+}
+
+sub _build__jsonrpc {
+    '2.0';
+}
 
 sub _error {
     my ($self, $error) = @_;

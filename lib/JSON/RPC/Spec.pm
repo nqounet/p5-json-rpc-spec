@@ -1,47 +1,48 @@
 package JSON::RPC::Spec;
-use strict;
-use warnings;
+use Moo;
 use Carp ();
-
 use version; our $VERSION = version->declare("v1.0.3");
-
 use Try::Tiny;
 use Router::Simple;
 use JSON::RPC::Spec::Procedure;
 use JSON::RPC::Spec::Client;
-
-use Moo;
-with 'JSON::RPC::Spec::Common';
+with qw(
+  JSON::RPC::Spec::Common
+);
 
 use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
 
 has router => (
-    is      => 'ro',
-    default => sub { Router::Simple->new },
-    isa     => sub {
+    is  => 'lazy',
+    isa => sub {
         my $self = shift;
         $self->can('match') or Carp::croak('method match required.');
     },
 );
 
-has _procedure => (
-    is   => 'ro',
-    lazy => 1,
-    default =>
-      sub { JSON::RPC::Spec::Procedure->new(router => shift->router) },
-);
+has _procedure => (is => 'lazy');
 
 has _client => (
-    is      => 'ro',
-    default => sub { JSON::RPC::Spec::Client->new },
+    is      => 'lazy',
     handles => [qw(compose)],
 );
 
-has _is_batch => (is => 'rw');
+has [qw(_is_batch _content)] => (is => 'rw');
 
-has _content => (is => 'rw');
+use namespace::clean;
 
-no Moo;
+
+sub _build_router {
+    Router::Simple->new;
+}
+
+sub _build__procedure {
+    JSON::RPC::Spec::Procedure->new(router => shift->router);
+}
+
+sub _build__client {
+    JSON::RPC::Spec::Client->new;
+}
 
 sub _parse_json {
     my ($self) = @_;

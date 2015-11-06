@@ -1,12 +1,12 @@
 package JSON::RPC::Spec::Client;
-use strict;
-use warnings;
-use Carp ();
-
 use Moo;
-with 'JSON::RPC::Spec::Common';
+use Carp ();
+with qw(
+  JSON::RPC::Spec::Common
+);
 
-no Moo;
+use namespace::clean;
+
 
 sub compose {
     my ($self, $method, $params, $id) = @_;

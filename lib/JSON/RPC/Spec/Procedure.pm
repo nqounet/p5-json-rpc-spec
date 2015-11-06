@@ -1,12 +1,10 @@
 package JSON::RPC::Spec::Procedure;
-use strict;
-use warnings;
-use Carp ();
-
-use Try::Tiny;
-
 use Moo;
-with 'JSON::RPC::Spec::Common';
+use Carp ();
+use Try::Tiny;
+with qw(
+  JSON::RPC::Spec::Common
+);
 
 use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
 
@@ -19,7 +17,8 @@ has router => (
     },
 );
 
-no Moo;
+use namespace::clean;
+
 
 sub parse {
     my ($self, $obj) = @_;
