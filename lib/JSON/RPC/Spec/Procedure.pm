@@ -21,7 +21,7 @@ use namespace::clean;
 
 
 sub parse {
-    my ($self, $obj) = @_;
+    my ($self, $obj, $extra_args) = @_;
     if (ref $obj ne 'HASH') {
         return $self->_rpc_invalid_request;
     }
@@ -37,7 +37,7 @@ sub parse {
     }
     my ($result, $err);
     try {
-        $result = $self->_trigger($method, $obj->{params});
+        $result = $self->_trigger($method, $obj->{params}, $extra_args);
     }
     catch {
         $err = $_;
@@ -68,7 +68,7 @@ sub parse {
 
 # trigger registered method
 sub _trigger {
-    my ($self, $name, $params) = @_;
+    my ($self, $name, $params, $extra_args) = @_;
     my $router  = $self->router;
     my $matched = $router->match($name);
 
@@ -77,7 +77,7 @@ sub _trigger {
         Carp::croak 'rpc_method_not_found on trigger';
     }
     my $cb = delete $matched->{$self->_callback_key};
-    return $cb->($params, $matched);
+    return $cb->($params, $matched, @{$extra_args});
 }
 
 1;
@@ -88,33 +88,6 @@ __END__
 =head1 NAME
 
 JSON::RPC::Spec::Procedure - Subclass of JSON::RPC::Spec
-
-=head1 SYNOPSIS
-
-    use strict;
-    use Router::Simple;
-    use JSON::RPC::Spec::Procedure;
-
-    my $router = Router::Simple->new;
-    $router->connect(
-        echo => {
-            '.callback' => sub { $_[0] }
-        }
-    );
-    my $proc = JSON::RPC::Spec::Procedure->new(router => $router);
-    my $res = $proc->parse(
-        {
-            jsonrpc => '2.0',
-            method  => 'echo',
-            params  => 'Hello, World!',
-            id      => 1
-        }
-    ); # return hash ->
-       #    {
-       #        jsonrpc => '2.0',
-       #        result  => 'Hello, World!',
-       #        id      => 1
-       #    },
 
 =head1 DESCRIPTION
 
