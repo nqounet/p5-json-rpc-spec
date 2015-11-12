@@ -1,7 +1,7 @@
 package JSON::RPC::Spec;
 use Moo;
 use Carp ();
-use version; our $VERSION = version->declare("v1.0.3");
+use version; our $VERSION = version->declare("v1.0.4");
 use Try::Tiny;
 use Router::Simple;
 use JSON::RPC::Spec::Procedure;
