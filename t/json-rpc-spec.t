@@ -11,7 +11,6 @@ use t::Fake::Encode;
 use t::Fake::JSON;
 use t::Fake::Match;
 
-use Data::Printer {deparse => 1};
 my $obj;
 subtest 'standard' => sub {
     is(exception { $obj = JSON::RPC::Spec->new }, undef, 'new')
