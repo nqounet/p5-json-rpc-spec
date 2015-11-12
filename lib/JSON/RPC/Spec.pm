@@ -222,11 +222,11 @@ You can set the C<PERL_JSON_RPC_SPEC_DEBUG> environment variable to get some adv
 
 =head1 SEE ALSO
 
-http://search.cpan.org/dist/JSON-RPC/
+L<JSON::RPC>
 
-http://search.cpan.org/dist/JSON-RPC-Dispatcher/
+L<JSON::RPC::Dispatcher>
 
-http://search.cpan.org/dist/JSON-RPC-Common/
+L<JSON::RPC::Common>
 
 =head1 LICENSE
 
