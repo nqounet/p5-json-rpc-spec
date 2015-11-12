@@ -5,4 +5,5 @@
 --merge
 --timer
 --trap
+-w
 t
