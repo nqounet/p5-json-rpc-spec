@@ -45,7 +45,7 @@ sub _build__client {
 }
 
 sub _parse_json {
-    my ($self) = @_;
+    my ($self, $extra_args) = @_;
     warn qq{-- start parsing @{[$self->_content]}\n} if DEBUG;
 
     unless (length $self->_content) {
@@ -84,7 +84,7 @@ sub _parse_json {
     # procedure call and create response
     my @response;
     for my $obj (@{$req}) {
-        my $res = $self->_procedure->parse($obj);
+        my $res = $self->_procedure->parse($obj, $extra_args);
 
         # notification is ignore
         push @response, $res if $res;
@@ -96,16 +96,20 @@ sub _parse_json {
 
 # parse JSON string to hash
 sub parse_without_encode {
-    my ($self, $json_string) = @_;
+    my $self        = shift;
+    my $json_string = shift;
+    my $extra_args  = +[@_];
     $self->_content($json_string);
-    return $self->_parse_json;
+    return $self->_parse_json($extra_args);
 }
 
 # parse JSON string to JSON string
 sub parse {
-    my ($self, $json_string) = @_;
+    my $self        = shift;
+    my $json_string = shift;
+    my $extra_args  = +[@_];
     $self->_content($json_string);
-    my $result = $self->_parse_json;
+    my $result = $self->_parse_json($extra_args);
     return unless $result;
     return $self->coder->encode($result);
 }
@@ -119,7 +123,7 @@ sub register {
     if (ref $cb ne 'CODE') {
         Carp::croak('code required');
     }
-    $self->router->connect($pattern, {$self->_callback_key => $cb}, {});
+    $self->router->connect($pattern, +{$self->_callback_key => $cb}, +{});
     return $self;
 }
 

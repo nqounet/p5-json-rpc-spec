@@ -67,4 +67,30 @@ subtest 'router change' => sub {
     ) or diag explain $obj;
 };
 
+subtest 'extra args' => sub {
+    $obj = JSON::RPC::Spec->new;
+    $obj->register(
+        echo => sub {
+            is shift, 'Hello, World!', 'is params';
+            is_deeply shift, +{}, 'is_deeply matched';
+            is_deeply shift, +{key => 'value'}, 'is_deeply extra_args';
+            is shift, 0, 'second args';
+            is scalar @_, 0, 'no more args';
+            return;
+        }
+    );
+    my $json_string
+      = '{"jsonrpc": "2.0", "method": "echo", "params": "Hello, World!", "id": 1}';
+    my $res    = $obj->parse($json_string, +{key => 'value'}, 0);
+    my $coder  = JSON->new;
+    my $result = $coder->decode($res);
+    is_deeply $result,
+      +{
+        id      => 1,
+        result  => undef,
+        jsonrpc => '2.0'
+      },
+      'is_deeply result';
+};
+
 done_testing;
