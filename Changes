@@ -2,6 +2,8 @@ Revision history for Perl extension JSON-RPC-Spec
 
 {{$NEXT}}
 
+    - add undeclared dependency `namespace::clean` to cpanfile.
+
 v1.0.4 2015-11-12T01:03:04Z
 
     - add extra args into parse to register method.
@@ -39,4 +41,3 @@ v1.0.0 2014-08-26T12:50:12Z
 0.01 2014-08-13T14:28:56Z
 
     - original version
-
