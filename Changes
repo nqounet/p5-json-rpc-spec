@@ -2,7 +2,17 @@ Revision history for Perl extension JSON-RPC-Spec
 
 {{$NEXT}}
 
-    - add undeclared dependency `namespace::clean` to cpanfile.
+    commit 494dff7e668a0be085367d5e452b39661283a33d
+    Author: nqounet <mail@nqou.net>
+    Date:   Sun Nov 15 22:58:04 2015 +0900
+
+        add undeclared dependency(master)
+
+    commit 38591da6a8b9b96d66769578eb2c8885e930945e
+    Author: Mohammad S Anwar <mohammad.anwar@yahoo.com>
+    Date:   Thu Nov 12 15:20:01 2015 +0000
+
+        - Made SEE ALSO link clickable.
 
 v1.0.4 2015-11-12T01:03:04Z
 
