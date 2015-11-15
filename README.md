@@ -89,11 +89,11 @@ You can set the `PERL_JSON_RPC_SPEC_DEBUG` environment variable to get some adva
 
 # SEE ALSO
 
-http://search.cpan.org/dist/JSON-RPC/
+[JSON::RPC](https://metacpan.org/pod/JSON::RPC)
 
-http://search.cpan.org/dist/JSON-RPC-Dispatcher/
+[JSON::RPC::Dispatcher](https://metacpan.org/pod/JSON::RPC::Dispatcher)
 
-http://search.cpan.org/dist/JSON-RPC-Common/
+[JSON::RPC::Common](https://metacpan.org/pod/JSON::RPC::Common)
 
 # LICENSE
 

@@ -51,6 +51,7 @@
             "Moo::Role" : "0",
             "Router::Simple" : "0",
             "Try::Tiny" : "0",
+            "namespace::clean" : "0",
             "version" : "0"
          }
       },
@@ -75,5 +76,8 @@
    },
    "version" : "v1.0.4",
    "x_authority" : "cpan:NQOUNET",
+   "x_contributors" : [
+      "Mohammad S Anwar <mohammad.anwar@yahoo.com>"
+   ],
    "x_serialization_backend" : "JSON::PP version 2.27203"
 }
