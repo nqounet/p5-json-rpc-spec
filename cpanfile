@@ -3,6 +3,7 @@ requires 'Moo';
 requires 'Moo::Role';
 requires 'Router::Simple';
 requires 'Try::Tiny';
+requires 'namespace::clean';
 requires 'version';
 
 recommends 'Cpanel::JSON::XS';
