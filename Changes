@@ -2,6 +2,8 @@ Revision history for Perl extension JSON-RPC-Spec
 
 {{$NEXT}}
 
+v1.0.5 2015-11-15T15:07:31Z
+
     commit 494dff7e668a0be085367d5e452b39661283a33d
     Author: nqounet <mail@nqou.net>
     Date:   Sun Nov 15 22:58:04 2015 +0900
