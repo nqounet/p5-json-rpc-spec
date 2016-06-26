@@ -2,6 +2,16 @@ Revision history for Perl extension JSON-RPC-Spec
 
 {{$NEXT}}
 
+v1.0.6 2016-06-26T09:31:10Z
+
+    commit c0c8a2140412d40fac17d4409489f84e88ca91cc
+    Author: nqounet <mail@nqou.net>
+    Date:   Sun Jun 26 02:26:09 2016 -0700
+
+        fix regex syntax(master)
+
+        http://www.cpantesters.org/cpan/report/b7ae725c-3abc-11e6-9180-881149b3ac32
+
 v1.0.5 2015-11-15T15:07:31Z
 
     commit 494dff7e668a0be085367d5e452b39661283a33d
