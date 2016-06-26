@@ -103,4 +103,4 @@ This library is free software; you can redistribute it and/or modify it under th
 
 # AUTHOR
 
-nqounet &lt;mail@nqou.net>
+nqounet <mail@nqou.net>
