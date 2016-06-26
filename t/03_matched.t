@@ -45,18 +45,18 @@ $rpc->register(
 subtest 'placeholder' => sub {
     my $res
       = $rpc->parse('{"jsonrpc":"2.0","method":"test.ok","params":1,"id":1}');
-    like $res, qr/"result":{"matched":"ok"}/, 'return ok' or diag explain $res;
+    like $res, qr/"result":\{"matched":"ok"\}/, 'return ok' or diag explain $res;
 
     $res = $rpc->parse(
         '{"jsonrpc":"2.0","method":"test.ok.ok","params":1,"id":1}');
-    like $res, qr/"result":{"matched":"ok\.ok"}/, 'return ok.ok'
+    like $res, qr/"result":\{"matched":"ok\.ok"\}/, 'return ok.ok'
       or diag explain $res;
 };
 
 subtest 'normal match' => sub {
     my $res
       = $rpc->parse('{"jsonrpc":"2.0","method":"match","params":1,"id":1}');
-    like $res, qr/"result":{}/, 'return empty hash' or diag explain $res;
+    like $res, qr/"result":\{\}/, 'return empty hash' or diag explain $res;
 };
 
 subtest 'no match' => sub {
