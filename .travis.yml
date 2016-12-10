@@ -1,4 +1,6 @@
 language: perl
+sudo: false
+
 perl:
   - "5.12"
   - "5.14"
@@ -6,6 +8,13 @@ perl:
   - "5.18"
   - "5.20"
 
-notifications:
-  webhooks:
-    - https://idobata.io/hook/travis_ci/5b5a1899-9c57-4107-9da6-3d22e6670998
+before_install:
+  - cpanm --quiet --notest --skip-satisfied Devel::Cover Devel::Cover::Report::Codecov
+  - cpanm --quiet --notest --skip-satisfied --installdeps --with-recommend .
+  - cover -delete
+script:
+  - perl Build.PL
+  - ./Build build
+  - cover -test
+after_success:
+  - cover -report codecov
