@@ -1,26 +1,24 @@
 language: perl
 sudo: false
 perl:
-    - "5.22"
-    - "5.24"
-    - "5.26"
-    - "5.28"
     - "5.30"
+    - "5.28"
+    - "5.26"
+    - "5.24"
+    - "5.22"
 jobs:
     include:
-        - perl: "5.8"
-          dist: precise
-        - perl: "5.10"
-          dist: trusty
-        - perl: "5.12"
-          dist: trusty
-        - perl: "5.14"
-          dist: trusty
-        - perl: "5.16"
+        - perl: "5.20"
           dist: trusty
         - perl: "5.18"
           dist: trusty
-        - perl: "5.20"
+        - perl: "5.16"
+          dist: trusty
+        - perl: "5.14"
+          dist: trusty
+        - perl: "5.12"
+          dist: trusty
+        - perl: "5.10"
           dist: trusty
 before_install:
     - cpanm --quiet --notest --skip-satisfied Devel::Cover Devel::Cover::Report::Codecov
