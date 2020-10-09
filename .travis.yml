@@ -1,32 +1,33 @@
 language: perl
 sudo: false
 perl:
-    - "5.30"
-    - "5.28"
-    - "5.26"
-    - "5.24"
-    - "5.22"
+  - "5.32"
+  - "5.30"
+  - "5.28"
+  - "5.26"
+  - "5.24"
+  - "5.22"
 jobs:
-    include:
-        - perl: "5.20"
-          dist: trusty
-        - perl: "5.18"
-          dist: trusty
-        - perl: "5.16"
-          dist: trusty
-        - perl: "5.14"
-          dist: trusty
-        - perl: "5.12"
-          dist: trusty
-        - perl: "5.10"
-          dist: trusty
+  include:
+    - perl: "5.20"
+      dist: trusty
+    - perl: "5.18"
+      dist: trusty
+    - perl: "5.16"
+      dist: trusty
+    - perl: "5.14"
+      dist: trusty
+    - perl: "5.12"
+      dist: trusty
+    - perl: "5.10"
+      dist: trusty
 before_install:
-    - cpanm --quiet --notest --skip-satisfied Devel::Cover Devel::Cover::Report::Codecov
-    - cpanm --quiet --notest --skip-satisfied --installdeps --with-recommend .
-    - cover -delete
+  - cpanm --quiet --notest --skip-satisfied Devel::Cover Devel::Cover::Report::Codecov
+  - cpanm --quiet --notest --skip-satisfied --installdeps --with-recommend .
+  - cover -delete
 script:
-    - perl Build.PL
-    - ./Build build
-    - cover -test
+  - perl Build.PL
+  - ./Build build
+  - cover -test
 after_success:
-    - cover -report codecov
+  - cover -report codecov
