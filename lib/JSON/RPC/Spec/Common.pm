@@ -1,6 +1,6 @@
 package JSON::RPC::Spec::Common;
 use Moo::Role;
-use Carp ();
+use Carp          ();
 use JSON::MaybeXS qw(JSON);
 
 has coder => (
@@ -12,9 +12,9 @@ has coder => (
     },
 );
 
-has [ qw(_callback_key _jsonrpc) ] => (is => 'lazy');
+has [qw(_callback_key _jsonrpc)] => (is => 'lazy');
 
-has [ qw(_id _is_notification) ] => (is => 'rw');
+has [qw(_id _is_notification)] => (is => 'rw');
 
 use namespace::clean;
 

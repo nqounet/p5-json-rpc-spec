@@ -3,7 +3,7 @@ use Moo;
 use Carp ();
 use Try::Tiny;
 with qw(
-    JSON::RPC::Spec::Common
+  JSON::RPC::Spec::Common
 );
 
 use constant DEBUG => $ENV{PERL_JSON_RPC_SPEC_DEBUG} || 0;
@@ -35,7 +35,9 @@ sub parse {
         return $self->_rpc_invalid_request;
     }
     my $jsonrpc_version = $self->_jsonrpc;
-    $obj->{jsonrpc} ne $jsonrpc_version and return $self->_rpc_invalid_request(qq{Invalid Request: jsonrpc must be '$jsonrpc_version'});
+    $obj->{jsonrpc} ne $jsonrpc_version
+      and return $self->_rpc_invalid_request(
+        qq{Invalid Request: jsonrpc must be '$jsonrpc_version'});
 
     my ($result, $err);
     try {
@@ -75,7 +77,7 @@ sub parse {
 # trigger registered method
 sub _trigger {
     my ($self, $name, $params, $extra_args) = @_;
-    my $router = $self->router;
+    my $router  = $self->router;
     my $matched = $router->match($name);
 
     # rpc call of non-existent method:
