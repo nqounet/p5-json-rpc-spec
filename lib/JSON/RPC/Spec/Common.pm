@@ -47,7 +47,6 @@ sub _rpc_invalid_request {
         message => $msg
     };
     $self->_is_notification(undef);
-    $self->_id(undef);
     return $self->_error($error);
 }
 
@@ -88,7 +87,6 @@ sub _rpc_parse_error {
         code    => -32700,
         message => $msg
     };
-    $self->_id(undef);
     return $self->_error($error);
 }
 

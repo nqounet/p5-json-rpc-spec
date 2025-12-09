@@ -33,21 +33,39 @@ subtest 'invalid params' => sub {
 subtest 'invalid jsonrpc version' => sub {
     my $res;
     $res = $rpc->parse_without_encode(
-        '{"jsonrpc":"1.0","method":"sum","params":[1,2,3],"id":3}');
+        '{"jsonrpc":"1.0","method":"sum","params":[1,2],"id":6}');
     is ref $res, 'HASH';
     ok exists $res->{error};
-    is $res->{error}{message}, q{Invalid Request: jsonrpc must be '2.0'},
-      'invalid jsonrpc version';
+    is_deeply $res,
+      {
+        "jsonrpc" => "2.0",
+        "error"   => {
+            "code"    => -32600,
+            "message" => "Invalid Request: jsonrpc must be '2.0'"
+        },
+        "id" => 6
+      },
+      'invalid jsonrpc version'
+      or diag explain $res;
 };
 
 subtest 'invalid jsonrpc version 2' => sub {
     my $res;
     $res = $rpc->parse_without_encode(
-        '{"jsonrpc":2,"method":"sum","params":[1,2,3],"id":3}');
+        '{"jsonrpc":2,"method":"sum","params":[1,2],"id":6}');
     is ref $res, 'HASH';
     ok exists $res->{error};
-    is $res->{error}{message}, q{Invalid Request: jsonrpc must be '2.0'},
-      'invalid jsonrpc version';
+    is_deeply $res,
+      {
+        "jsonrpc" => "2.0",
+        "error"   => {
+            "code"    => -32600,
+            "message" => "Invalid Request: jsonrpc must be '2.0'"
+        },
+        "id" => 6
+      },
+      'invalid jsonrpc version'
+      or diag explain $res;
 };
 
 done_testing;
