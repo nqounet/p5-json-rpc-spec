@@ -76,7 +76,7 @@
          "web" : "https://github.com/nqounet/p5-json-rpc-spec"
       }
    },
-   "version" : "v1.1.0",
+   "version" : "v1.1.1",
    "x_authority" : "cpan:NQOUNET",
    "x_contributors" : [
       "Mohammad S Anwar <mohammad.anwar@yahoo.com>"
