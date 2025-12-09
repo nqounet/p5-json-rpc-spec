@@ -12,12 +12,11 @@ has coder => (
     },
 );
 
-has [qw(_callback_key _jsonrpc)] => (is => 'lazy');
+has [ qw(_callback_key _jsonrpc) ] => (is => 'lazy');
 
-has [qw(_id _is_notification)] => (is => 'rw');
+has [ qw(_id _is_notification) ] => (is => 'rw');
 
 use namespace::clean;
-
 
 sub _build_coder {
     JSON->new->utf8;
@@ -41,10 +40,11 @@ sub _error {
 }
 
 sub _rpc_invalid_request {
-    my ($self) = @_;
+    my ($self, $msg) = @_;
+    $msg //= 'Invalid Request';
     my $error = {
         code    => -32600,
-        message => 'Invalid Request'
+        message => $msg
     };
     $self->_is_notification(undef);
     $self->_id(undef);
@@ -52,19 +52,21 @@ sub _rpc_invalid_request {
 }
 
 sub _rpc_method_not_found {
-    my ($self) = @_;
+    my ($self, $msg) = @_;
+    $msg //= 'Method not found';
     my $error = {
         code    => -32601,
-        message => 'Method not found'
+        message => $msg
     };
     return $self->_error($error);
 }
 
 sub _rpc_invalid_params {
-    my ($self) = @_;
+    my ($self, $msg) = @_;
+    $msg //= 'Invalid params';
     my $error = {
         code    => -32602,
-        message => 'Invalid params'
+        message => $msg
     };
     return $self->_error($error);
 }
@@ -80,10 +82,11 @@ sub _rpc_internal_error {
 }
 
 sub _rpc_parse_error {
-    my ($self) = @_;
+    my ($self, $msg) = @_;
+    $msg //= 'Parse error';
     my $error = {
         code    => -32700,
-        message => 'Parse error'
+        message => $msg
     };
     $self->_id(undef);
     return $self->_error($error);
