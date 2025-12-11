@@ -143,13 +143,13 @@ subtest 'valid id(NULL)' => sub {
 subtest 'valid id(String)' => sub {
     my $res;
     $res = $rpc->parse_without_encode(
-        '{"jsonrpc":"2.0","method":"sum","params":[1,2],"id":"!""#$%&()"}');
+        '{"jsonrpc":"2.0","method":"sum","params":[1,2],"id":"!\"#$%&()"}');
     is ref $res, 'HASH';
     is_deeply $res,
       {
         jsonrpc => "2.0",
         result  => 3,
-        id      => undef
+        id      => q{!"#$%&()}
       },
       'valid id'
       or diag explain $res;
